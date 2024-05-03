@@ -4,6 +4,7 @@ ideas:
 - add column descriptions
 - graph each observation per year
 - downsize data to a specific year
+
 preprocess:
 - remove missing data
 - change all to lowercase
