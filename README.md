@@ -9,6 +9,7 @@ preprocess:
 - remove missing data
 - change all to lowercase
 - get all unknown values to be same type i.e "" -> 'unknown'
+- standerize redlist categories to fit new def 
 
 notes:
 - redlist categories
