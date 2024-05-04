@@ -5,6 +5,17 @@ The OBIS dataset is a collection of marine animal observations built from collec
 This open-access data provides information on marine bio-diversity to help highlight insights for scientific communities and generate potential sustainability practices.
 Our goal is to dive into the data set and pull out some insights regarding how the biodiversity of marine life has been changing.
 
+## Data Exploration
+We explored several features in the data set; firstly to determine the number of counts per year. We quickly discovered that there were several entries whose data managed to avoid the OBIS team's QC, having erroneous years.
+To avoid large skews (as observations increased over the years) as well as handling data points that may have incorrect dates, we limited the data to only include years greater than 1900.
+We additionally noticed a large spike in 2016 as the number of observations was about 10-fold greater as compared to neighboring years.
+This was reflected in our exploration of Orca sightings as they seemed to mirror the overall count graph shape which indicates a general increase in observations rather than a particular bloom being the cause.
+
+As we are mostly concerned with changing biodiversities, we deemed it important to find out how much of the data has been appropriately labeled with IUCN's redlist categories.
+We found that about 10% of entries had actual redlist categories listed in their entries, with approximately 2000 unique species with IUCN categories.
+This showed this data set was not exhaustive with that information, IUCN has over 150,000 species they've analyzed with over 40,000 currently threatened so there is a clear disparity.
+As an example, Atlantic tuna had gone from Endangered to Least Concern in 2011, neither of which was categorized in this data. If this angle is to be examined it may be pertinent to incorporate this information.
+
 ## Column Descriptions
 - id:	Globally unique identifier assigned by OBIS.
 - dataset_id:	Internal dataset identifier assigned by OBIS.
