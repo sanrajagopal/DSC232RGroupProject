@@ -43,28 +43,3 @@ The dataset is quite large so we will need to clean the data in several ways.
 5) Standardize the redlist_category - There are features of the redlist that are outdated and should be updated to current standards
 6) Scale to observation counts - The number of observations varies, especially comparing older years to recent ones. Normalizing counts based on the counts made that year could help to normalize the data.
 7) Potential feature expansion - Depending on the needs of our investigation we may use other data sets from NOAA such as WOA to expand our feature list
-
-ideas: 
-- add column descriptions
-- graph each observation per year
-- downsize data to a specific year
-
-preprocess:
-- remove irrelavant columns
-- remove missing data
-- change all to lowercase
-- get all unknown values to be same type i.e "" -> 'unknown'
-- standerize redlist categories to fit new def 
-
-notes:
-- redlist categories
-- ex = extinct
-- ew = extinct wild
-- cr = critically endangered
-- en = endangered
-- vu = vulnerable
-- nt = near threatened
-- cd = conservation dependent
-- lc = least concern
-- dd = data deficient
-- nn = not evaluated 
