@@ -46,36 +46,26 @@ As an example, Atlantic tuna had gone from Endangered to Least Concern in 2011, 
 - redlist_category:	IUCN Red List category.
 
 ## Preprocessing
-The dataset is quite large so we will need to clean the data in several ways.
-1) Remove irrelevant columns - Numerous columns show duplicate information, do not have a variable description provided, or do not provide useful insight, so a majority of these columns will need to be removed.
-2) Remove missing data - A number of entries are corrupted or do not have useable information which need to be removed
-3) Standardizing - Due to the nature of human observation some standardization will need to be done regarding names via changing entries to lower-case and removing whitespace
-4) Standardizing unknown values - Convert all blank, null, or n/a values into a singular 'unknown' type
-5) Standardize the redlist_category - There are features of the redlist that are outdated and should be updated to current standards
-6) Scale to observation counts - The number of observations varies, especially comparing older years to recent ones. Normalizing counts based on the counts made that year could help to normalize the data.
-7) Potential feature expansion - Depending on the needs of our investigation we may use other data sets from NOAA such as WOA to expand our feature list
+### OBIS Dataset
+1) The dataset is quite large so we will need to clean the data in several ways.
+2) Remove irrelevant columns - Numerous columns show duplicate information, do not have a variable description provided, or do not provide useful insight, so a majority of these columns were removed.
+3) Extracted year from dates - We wanted to group the species by the species name as well as the year of the sighting.
+4) Remove missing data - A number of entries were null which were removed.
+5) Aggregation Columns - Many of the numerical data had to be aggragated by year and species so multiple new columns were created such as: average temperature, average salinity, average shore distance, min/max of latitidue and longitude, average bathymetry, and the total counts of observation per year for each species.
+6) Scale to observation counts - The number of observations varies, especially comparing older years to recent ones. By doing a log transformation the counts were standardized the counts which could be used for the model.
+### IUCN Dataset
+1) To have accurate redlist classifications for the species we incorporated the IUCN redlist assessment dataset which has up to date redlist assessments.
+2) Extracted year from dates - Similar to the previous dataset, we wanted to extract only the year.
+3) Create the safe column - For the labels, we wanted to create a boolean column that would determine whether a species is considered safe or unsafe. If the species was extinict, extinct in the wild, critically endangered, endagendered, or vulnerable it would be labeled as not safe (false). If the species was near threantened or least concernced the label would be safe (true). This was later changed to 0 for false and 1 for true so that the ml model could read.
+### Merged Dataset
+We merged the preprocessed OBIS and IUCN datasets to create a new dataset that will be used for the ml model.
+1) Dropped Species with NULL safe - If a species did not have a redlist classification at this point, they were removed.
+2) Filtering Years Before Assessment year - Since we are not able to determine the accuracy of a redlist classification prior to the year of assessment, those rows were removed.
+3) Feature expansion - Using the aggregation columns that were created before we created new features that showed the year on year changes of aggregates as well as the moving averages and rolling standard deviations.
 
-ideas: 
-- add column descriptions
-- graph each observation per year
-- downsize data to a specific year
+## Model 1
+For our first model we decided to use a random forest. The random forest had a training error: 0.074 (0.926 accuracy) validation error: 0.079 (0.921 accuracy) testing error: 0.082 (0.918 accuracy).
 
-preprocess:
-- remove irrelavant columns
-- remove missing data
-- change all to lowercase
-- get all unknown values to be same type i.e "" -> 'unknown'
-- standerize redlist categories to fit new def 
+Conclusions: Looking at the training/validation/testing errors the model appears to be doing extremely well. However, the model is overfitting because the data has more safe labels over unsafe labels. In order to have a more accurate model we will need to reduce the number of safe species to fit 75% of the total data. The next model we are thinking of implementing is AdaBoost. Since our data is skewed and has many different variables that consist of human observations and numerical data, AdaBoost deals with these complex features more efficiently than random forest.
 
-notes:
-- redlist categories
-- ex = extinct
-- ew = extinct wild
-- cr = critically endangered
-- en = endangered
-- vu = vulnerable
-- nt = near threatened
-- cd = conservation dependent
-- lc = least concern
-- dd = data deficient
-- nn = not evaluated 
+
