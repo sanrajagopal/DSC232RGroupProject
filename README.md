@@ -66,9 +66,13 @@ We merged the preprocessed OBIS and IUCN datasets to create a new dataset that w
 ## Model 1 - Random Forest
 ### Fitting Graph
 For our first model we decided to use a random forest. After trying different hyperparameters via grid search, we found that the max depth parameter was the most influential in the models performance. Using that as our "complexity" we mapped out the fitting graph, where we noticed that a model with a depth of 10 provided the best validation error. This gave as the following errors for each dataset:
+
 Train Error: 0.0745
+
 Validation Error: 0.0767
+
 Test Error: 0.0743
+
 However we also noticed a few issues. First off, our models had a particularly narrow range of errors, where our accuracy was above 90% at all times. Second, shorter trees resulted in better errors for the validation dataset over the training dataset, despite the model being trained on the training set. Thirdly, while the model performs very well, it only does so on the safe (safe?=1) situations, and is quite poor at classifying unsafe (safe?=0), as evident in the confusion matrix. Given these facts, it is hard to tell if our model underfits or overfits in its current state as it is extremely biased.
 ### Conclusion
 Looking at the validation/testing errors the model appears to be doing extremely well. However, the model is very biased because the data has more safe labels over unsafe labels. In order to have a more accurate model we will need to reduce the number of safe species to fit 75% of the total data. In addition, reducing the number of features followed by a new grid-search may provide a model that better generalizes to unseen data.
