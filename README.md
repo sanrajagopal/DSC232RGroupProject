@@ -305,7 +305,7 @@ Ekai: Co author and co coder.
 - Contributed to both the code and write up.
 -  Worked as a team. 
 - Set up meetings
-- 
+
 Sanjana: Co author and co coder. 
 - Contributed to both the code and write up. 
 - Worked as a team. 
