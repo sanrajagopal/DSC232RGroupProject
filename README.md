@@ -5,7 +5,7 @@
 The OBIS dataset is a collection of marine animal observations built from collected documentation, volunteer-provided observations, and aggregated data sets whose records go back over 100 years. This open-access data provides information on marine biodiversity to help highlight insights for scientific communities and generate potential sustainability practices. We chose this dataset because we were curious about what different attributes could affect a species endangerment and whether we can predict if a species is or will be endangered with those features. The IUCN (International Union for Conservation of Nature) is an international organization who is primarily known for their red list categories. Below is an image showing the different red list categories: extinct, extinct in the wild, critically endangered, endangered, vulnerable, near threatened, and least concerned. These labels determine a species' risk worldwide of ceasing to exist. Our goal is to dive into the OBIS data set and create a classifier that can accurately predict whether a species may be at risk of becoming threatened according to the IUCN red list categories.
 
 ![Iucn Classification](https://github.com/sanrajagopal/DSC232RGroupProject/blob/3b2ca8e3a25818388ae9325fc618afb05c05536f/pics/iucnclass.png)
-
+![Sad Turtle](https://github.com/sanrajagopal/DSC232RGroupProject/blob/8199477757f0599c336365e5d0e7a9e9daeb3a97/pics/sadturtle.png)
 
 ## Method Section
 
