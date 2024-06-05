@@ -95,9 +95,9 @@ Dropped species with NULL safe - If a species did not have a red list category a
 Filtering years before assessment year - Since we are not able to determine the accuracy of a red list category prior to the year of assessment, those rows were removed.
 Feature expansion - Using the aggregation columns that were created, we created new features that showed the year on year changes of aggregates, moving averages, and rolling standard deviations.
 
-#### Model 1a - Random Forest
+### Model 1a - Random Forest
 
-##### Model Creation 
+#### Model Creation 
 
 The first model we chose was a random forest model. We set up a vector assembler which took in the features that were specified from the final processed dataset. Then the data was split up to train/validation/test with a 0.6/0.2/0.2 split. Using our training and validation data, we performed a grid search on the hyperparameters max depth and num trees. This code was then re-adapted to form the code for the fitting graph. Using max depth as our basis for the fitting graph, we then checked the fit of our model (see results). 
 
@@ -105,15 +105,15 @@ The first model we chose was a random forest model. We set up a vector assembler
 
 Once the parameters were chosen, the selected model was trained again on the training data set, and the final validation error was determined (see results). To verify these results we looked at a ground truth example. We first selected a safe observation and unsafe observation. From that, we created a new dataframe that showed whether it came from the training set or the validation  set, the features, the actual values, the predicted values, and a new column that showed whether the predicted values were correct or not.
 
-##### Confusion Matrix 
+#### Confusion Matrix 
 
 A confusion matrix was created by selecting the actual labels vs predicted values from the validation set. Because dataframes in pyspark do not have a direct confusion matrix function, we utilized the function from pyspark.mllib instead. This required the data to be transformed into a RDD at which point it could be made into a confusion matrix and presented using seaborn (see results).
 
-##### Feature Importance 
+#### Feature Importance 
 
 To determine the impact of each feature of the model, we extracted the provided feature importances using the available model method. Ranking and graphing the importance of each feature via a histogram displayed the strength of our selections (see results).
 
-#### Model 1b - Random Forest v2
+### Model 1b - Random Forest v2
 
 From the issues that were discussed in the discussion section (see discussion), we decided to do another Random Forest model with adjustments to combat these issues. 
 
@@ -121,7 +121,7 @@ We first reduced the amount of safe values by sampling 0.0888 of the safe values
 
 A confusion matrix and a importance feature graph was also created with the same methods discussed in the model 1a. 
 
-#### Model 2 - Gradient Boosted Trees Classifier
+### Model 2 - Gradient Boosted Trees Classifier
 
 Using the same adjustments to the data made for our 2nd version of the random forest model, we decided to use a gradient boosted tree classifier. While many of the same methods were employed here as was used in model 1b, the parameter grid was expanded to accommodate the GBT classifiers larger hyperparameter selection. Focusing on max depth, number of iterations, and step size for our parameter grid, and max depth for our fitting graph we narrowed down to a model that was used in our final analysis (see results).
 
@@ -303,9 +303,8 @@ Finally, it is important to recognize that conflating global marine species envi
 
 Ekai: Co author and co coder.
 - Contributed to both the code and write up.
--  Worked as a team. 
+- Worked as a team. 
 - Set up meetings
-
 Sanjana: Co author and co coder. 
 - Contributed to both the code and write up. 
 - Worked as a team. 
