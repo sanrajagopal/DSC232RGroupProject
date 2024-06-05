@@ -272,11 +272,12 @@ Finally, it is important to recognize that conflating global marine species envi
 
 ## Collaboration
 
-Ekai: Co author and co coder. 
-Contributed to both the code and write up.
- Worked as a team. 
-Set up meetings 
+Ekai: Co author and co coder.
+- Contributed to both the code and write up.
+-  Worked as a team. 
+- Set up meetings
+- 
 Sanjana: Co author and co coder. 
-Contributed to both the code and write up. 
-Worked as a team. 
-Set up meetings
+- Contributed to both the code and write up. 
+- Worked as a team. 
+- Set up meetings
