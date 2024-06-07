@@ -125,7 +125,15 @@ A confusion matrix and an importance feature graph were also created with the sa
 
 Using the same adjustments to the data made for our 2nd version of the random forest model, we decided to use a gradient-boosted tree classifier. While many of the same methods were employed here as was used in model 1b, the parameter grid was expanded to accommodate the GBT classifier's larger hyperparameter selection. Focusing on max depth, number of iterations, and step size for our parameter grid, and max depth for our fitting graph we narrowed down to a model that was used in our final analysis (see results).
 
-Like before, a confusion matrix and importance feature graphs were created with the same methods discussed in model 1a. 
+Like before, a confusion matrix and importance feature graphs were created with the same methods discussed in model 1a.
+
+### Final Model - Random Forest v2
+
+After reviewing the various models, we stuck with our random forest model using the altered data set as our final model.
+
+As before, we retained the 50/50 split between safe and unsafe values to remove errors associated with distribution. This was paired with the removal of the least impactful features according to the feature importance metric of model 1a, which were marine, freshwater, terrestrial, and brackish. Finally, since we applied a min-max scaler to our data, we removed all count features that were put through a log transformation. This left us with the following 20 features: 'avg_shoredistance', 'avg_bathymetry', 'avg_sst', 'avg_sss', 'sum_count', 'moving_avg_sst', 'rolling_stddev_sst', 'yoy_change_avg_sst', 'moving_avg_sss', 'rolling_stddev_sss', 'yoy_change_avg_sss', 'moving_avg_sum_cnt', 'rolling_stddev_sum_cnt', 'yoy_change_sum_cnt', 'difference_long', 'difference_lat', 'yoy_dif_lat', 'yoy_dif_long', 'yoy_dif_shoredistance', 'yoy_dif_bath'.  However, unlike the previous models, we trained the model on the combination of training and validation data and tested our models on the test data set.
+
+We checked the same model metrics as before looking at raw accuracy performance, ground truth accuracy, a confusion matrix, and ranked feature importance (see results). These were obtained in the same method as previous models. However, a fitting graph was not checked in this instance as we were looking at the final model and its selected parameters rather than a range of parameters and their effect on fit.
 
 ## Results Section
 
