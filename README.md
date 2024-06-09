@@ -1,20 +1,33 @@
-# DSC232RGroupProject
+# DSC232RGroupProject - OBIS Classification
+
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/8199477757f0599c336365e5d0e7a9e9daeb3a97/pics/sadturtle.png" alt="Kemp's ridley turtle washed up on the Isle of Harris Credit: Ruth A Hamilton">
+</p>
+<p align="center">
+  <i>Figure 1. Kemp's ridley turtle washed up on the Isle of Harris. Credit: Ruth A Hamilton. Source: <a href="https://www.mcsuk.org/news/sad-stranded-turtles/" title="MCSUK" target="_blank">Link</a></i>
+</p>
 
 ## Introduction
 
-The OBIS dataset is a collection of marine animal observations built from collected documentation, volunteer-provided observations, and aggregated data sets whose records go back over 100 years. This open-access data provides information on marine biodiversity to help highlight insights for scientific communities and generate potential sustainability practices. We chose this dataset because we were curious about what different attributes could affect a species' endangerment and whether we can predict if a species is or will be endangered with those features. The IUCN (International Union for Conservation of Nature) is an international organization that is primarily known for its red list categories. Below is an image showing the different red list categories: extinct, extinct in the wild, critically endangered, endangered, vulnerable, near threatened, and least concerned. These labels determine a species' risk worldwide of ceasing to exist. Our goal is to dive into the OBIS data set and create a classifier that can accurately predict whether a species may be at risk of becoming threatened according to the IUCN red list categories.
+The OBIS (Ocean Biodiversity Information System) dataset is a collection of marine animal observations built from collected documentation, volunteer-provided observations, and aggregated data sets whose records go back over 100 years. This open-access data provides information on marine biodiversity to help highlight insights for scientific communities and generate potential sustainability practices. We chose this dataset because we were curious about what different attributes could affect a species' endangerment and whether we can predict if a species is or will be endangered with those features. The IUCN (International Union for Conservation of Nature) is an international organization that is primarily known for its red list categories. Below is an image showing the different red list categories: extinct, extinct in the wild, critically endangered, endangered, vulnerable, near threatened, and least concerned. These labels determine a species' risk worldwide of ceasing to exist. Our goal is to dive into the OBIS data set and create a classifier that can accurately predict whether a species may be at risk of becoming threatened according to the IUCN red list categories.
 
-![Iucn Classification](https://github.com/sanrajagopal/DSC232RGroupProject/blob/3b2ca8e3a25818388ae9325fc618afb05c05536f/pics/iucnclass.png)
+The OBIS data set can be downloaded here: [OBIS Data Set](https://obis.org/data/access/)
 
-![Sad Turtle](https://github.com/sanrajagopal/DSC232RGroupProject/blob/8199477757f0599c336365e5d0e7a9e9daeb3a97/pics/sadturtle.png)
+You can follow along in our Jupyter Notebook here: [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb)
+
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/3b2ca8e3a25818388ae9325fc618afb05c05536f/pics/iucnclass.png" alt="Red list category rankings">
+</p>
+<p align="center">
+  <i>Figure 2. Red list category rankings according to the IUCN (EX: Extinct, EW: Extinct in the Wild, CE: Critically Endangered, EN: Endangered, VU: Vulnerable, NT: Near Threatened, LC: Least Concern). Source: <a href="https://commons.wikimedia.org/w/index.php?curid=1493206" title="Wikipedia" target="_blank">Link</a></i>
+</p>
 
 ## Method Section
 
 ### Data Exploration
 
-The size of our dataset was a 17GB parquet file (120GB as a csv) after compression, necessitating the use of Pyspark to perform much of the data exploration. The following libraries were used throughout the project
-
-```
+The size of our dataset was a 17GB parquet file after compression, necessitating the use of Pyspark to perform much of the data exploration. A minimum of 8gb per core was required. The project was completed in a jupyter notebook run on a cluster provided by the SDSC (San Diego Supercomputer Center). The following libraries were used throughout the project.
+```python
 import os, pickle, glob
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
@@ -36,14 +49,51 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 ```
 
-We first looked into the number of observations per year for the dataset by grouping by the year column and aggregating the counts. We then filtered the dates after 1899 to get all dates from the 20th to 21st centuries and created a histogram to display the results (see results).
+We first looked into the number of observations per year for the dataset by grouping by the year column and aggregating the counts. We then filtered the dates after 1899 to get all dates from the 20th to 21st centuries. This was then convereted into a pandas dataframe which was used to create a histogram to display the results (see Results - Figure 3). Below is a compressed version of the code used.
+```python
+df_dates = df.groupBy(df.date_year).agg({'date_year':'count'}).sort(df.date_year).cache()
+df_dates = df_dates.withColumnRenamed('count(date_year)','obs_per_year')
+pandas_df_dates = df_dates.toPandas()
+pandas_df_dates_cut = pandas_df_dates[pandas_df_dates.date_year > 1899]
+plt.bar(pandas_df_dates_cut.date_year,pandas_df_dates_cut.obs_per_year)
+plt.title("Number of Observations per Year")
+plt.xlabel("Years")
+plt.ylabel("Observations(per 10 million)")
+```
 
-Then we looked into how many red list categories per species there were in the whole dataset. Filtering for unique species and red list category pairs, followed by grouping by the red list category column alone found us the counts per category. We created a bar graph to display the counts of the red list categories (see results).
+Then we looked into how many red list categories per species there were in the whole dataset. Filtering for unique species and red list category pairs, followed by grouping by the red list category column alone found us the counts per category. This summarized table was then converted into a pandas dataframe. We then used the dataframe to create a bar graph to display the counts of the red list categories (see Results - Figure 5). Below is a compressed version of the code used.
+```python
+df_redlist_distinct = df.select("scientificName","redlist_category").filter(df.scientificName != "").filter(df.redlist_category != "").distinct().cache()
+df_redlist_count = df_redlist_distinct.select("redlist_category").groupBy("redlist_category").agg({'redlist_category':'count'})
+df_redlist_count = df_redlist_count.withColumnRenamed('count(redlist_category)','obs_per_cat')
+pandas_redlist_count = df_redlist_count.toPandas()
+plt.bar(pandas_redlist_count.redlist_category,pandas_redlist_count.obs_per_cat)
+plt.title("Number of Distinct Species per IUCN classification")
+plt.xlabel("IUCN Classification")
+plt.ylabel("Number of species")
+```
 
-To compare trends, we decided to look into a well-known marine species, Orinicus Orcas (Orcas aka Killer Whales), and track the number of observations made per year. We filtered by species name matching Ornicus Orcas, grouped by year, and aggregated the counts like before. The line graph generated showed how observations changed over time (see results).
+To compare trends, we decided to look into a well-known marine species, Orinicus Orcas (Orcas aka Killer Whales), and track the number of observations made per year. We filtered by species name matching Ornicus Orcas, grouped by year, and aggregated the counts, and converted the results to a pandas dataframe like before. The line graph generated showed how observations changed over time (see results Figure 4). Below is a compressed version of the code used.
+```python
+df_orca = df.filter(df.scientificName == "Orcinus orca").select("date_year").groupBy("date_year").agg({'date_year':'count'}).sort("date_year").cache()
+df_orca = df_orca.withColumnRenamed('count(date_year)','obs_per_year')
+pandas_orca = df_orca.toPandas()
+plt.plot(pandas_orca.date_year,pandas_orca.obs_per_year)
+plt.title("Orca Observations over Time")
+plt.xlabel("Year")
+plt.ylabel("Number of observations")
+```
 
-To better prepare for data preprocessing we checked to see how many null values were in the dataset. We created a new data frame that took each column and summed the value of nulls per column.
-Column Descriptions as provided by OBIS. There were some columns not mentioned in this original list used in later analysis such as ‘eventDate’. In total, there were 268 columns.
+To better prepare for data preprocessing we checked to see how many null values were in the dataset. We created a new data frame that took each column and summed the value of nulls per column. Below is a compressed version of the code used.
+```python
+null_counts = df.select([f.sum(f.col(column).isNull().cast("int")).alias(column) for column in df.columns])
+null_counts_dict = null_counts.collect()[0].asDict()
+null_counts_df = sc.createDataFrame(null_counts_dict.items(), ["column_name", "null_count"])
+num_rows = null_counts_df.count()
+null_counts_df.show(num_rows, truncate=False)
+```
+
+Here is a sample of feature descriptions as provided by OBIS ([Link](https://obis.org/data/access/)). There were some features not mentioned in this original list that were used in later analysis such as ‘eventDate’. In total, there were 268 columns.
 - id: Globally unique identifier assigned by OBIS.
 - dataset_id: Internal dataset identifier assigned by OBIS.
 - decimalLongitude: Parsed and validated by OBIS.
@@ -77,55 +127,311 @@ Column Descriptions as provided by OBIS. There were some columns not mentioned i
 #### OBIS Dataset
 
 As stated in the data exploration step, due to the volume of data a series of cleaning operations was required.
-Remove irrelevant columns - Numerous columns showed duplicate information, did not have a variable description provided/could not be deciphered, or did not provide useful insight, so a majority of these columns were removed.
-Extracted year from dates - We wanted to group the entries by the species name as well as the year of the sighting. However, some entries were missing available year information which we extracted from a user-entered date column and inserted into the available year column. A UDF was required to parse the dates which proved to be slow.
-Aggregation columns - Much of the numerical data had to be aggregated by year and species so multiple new columns were created such as average temperature, average salinity, average shore distance, min/max of latitude and longitude, average bathymetry, and the total counts of observation per year for each species.
-Scale to observation counts - The number of observations varied, especially comparing older years to recent ones so we introduced a log transformation on counts. This was later removed as a scaler was applied to all data in future models.
-Remove missing data - Finally, any entries that remained, still containing null values, were removed.
+
+**Remove irrelevant columns** - Numerous columns showed duplicate information, did not have a variable description provided/could not be deciphered, or did not provide useful insight, so a majority of these columns were removed. Below is the code used.
+```python
+df_trim_col = df.select('id','decimalLongitude','decimalLatitude','date_year','scientificName','coordinateUncertaintyInMeters','shoredistance','bathymetry','sst','sss','marine','brackish','freshwater','terrestrial','taxonRank','redlist_category','superdomain','domain','kingdom','subkingdom','infrakingdom','phylum','phylum_division','subphylum_subdivision','subphylum','infraphylum','parvphylum','gigaclass','megaclass','superclass','class','subclass','infraclass','subterclass','superorder','order','suborder','infraorder','parvorder','superfamily','family','subfamily','supertribe','tribe','subtribe','genus','subgenus','section','subsection','series','species','subspecies','natio','variety','subvariety','forma','subforma','individualCount','eventDate')
+```
+
+**Extracted year from dates** - We wanted to group the entries by the species name as well as the year of the sighting. However, some entries were missing available year information which we extracted from a user-entered date column and inserted into the available year column. A UDF was required to parse the dates which proved to be slow. Below is the code used.
+```python
+# UDF
+from dateutil import parser
+def extract_year(date_str):
+    try:
+        parsed_date = parser.parse(date_str, fuzzy=True)
+        return parsed_date.year
+    except:
+        return None
+extract_year_udf = f.udf(extract_year, IntegerType())
+
+# Year Extraction
+df_year_fix = df_trim_col.withColumn(
+    "date_year",
+    f.when(f.col("date_year").isNull(), extract_year_udf(f.col("eventDate")))
+    .otherwise(f.col("date_year"))
+).drop("eventDate").filter(f.col("date_year").isNotNull())
+```
+
+**Handling nulls and uncertainty** - Null values in the data set were dropped. If data with outdated naming was found, it was replaced with the current scientific name. In situations in which the data showed signs of excessive uncertainty, attributed to the coordinateUncertaintyInMeters feature, the data was dropped as well. Below is the code used.
+```python
+df_sci_name_fix = df_year_fix.filter(f.col("scientificName").isNotNull()).withColumn("scientificName", f.regexp_replace('scientificName', 'Taenioides jacksoni', 'Trypauchenopsis intermedia'))
+df_uncert_fix = df_sci_name_fix.filter((f.col("coordinateUncertaintyInMeters") <= 1000) | (f.col("coordinateUncertaintyInMeters").isNull()))
+df_uncert_fix = df_uncert_fix.withColumn(
+    "coordinateUncertaintyInMeters",
+    f.when(f.col("coordinateUncertaintyInMeters").isNull(), f.col("coordinateUncertaintyInMeters") == 0)).drop("coordinateUncertaintyInMeters")
+df_env_fix = df_uncert_fix.filter(f.col("sst").isNotNull()).filter(f.col("sss").isNotNull()).filter(f.col("bathymetry").isNotNull())
+```
+
+**Managing counts** - Values in the individualCount feature were converted into an integer and used to adjust a count column if the data was present, using a count of 1 otherwise. Below is the code used.
+```python
+df_indiv_cnt_fix = df_env_fix.withColumn('individualCount', 
+                                         f.when(f.col('individualCount').isNotNull(), 
+                                         f.col('individualCount').cast('int'))
+                                         .otherwise(None)
+                                        )
+df_count_fix = df_indiv_cnt_fix.withColumn(
+    'count',
+    f.when((f.col('individualCount').isNull()) | (f.col('individualCount') <= 1), 1)
+    .when((f.col('individualCount') > 1), f.col('individualCount'))
+    .otherwise(None)
+).drop('individualCount')
+```
+
+**Aggregation columns** - Much of the numerical data had to be aggregated by year and species so multiple new columns were created such as average temperature, average salinity, average shore distance, min/max of latitude and longitude, average bathymetry, and the total counts of observation per year for each species. Below is the code used.
+```python
+aggregated_df = df_count_fix.groupBy("scientificName", "date_year").agg(
+    f.min("decimalLongitude").alias("min_decimalLongitude"),
+    f.max("decimalLongitude").alias("max_decimalLongitude"),
+    f.min("decimalLatitude").alias("min_decimalLatitude"),
+    f.max("decimalLatitude").alias("max_decimalLatitude"),
+    f.avg("shoredistance").alias("avg_shoredistance"),
+    f.avg("bathymetry").alias("avg_bathymetry"),
+    f.avg("sst").alias("avg_sst"),
+    f.avg("sss").alias("avg_sss"),
+    f.sum("count").alias("sum_count")
+)
+```
+
+**Scale to observation counts** - The number of observations varied, especially comparing older years to recent ones so we introduced a log transformation on counts. This was later removed as a scaler was applied to all data in future models. Below is the code used.
+```python
+aggregated_df_log_trans= aggregated_df.withColumn("log_sum_count", f.log1p("sum_count"))
+```
+
+**Merge with lost information** - The cladogram and environmental territory information lost as part of the aggregation process was joined back in. Below is the code used.
+```python
+df_clado_unique = df_year_fix.select('date_year','scientificName','marine','brackish','freshwater','terrestrial','superdomain','domain','kingdom','subkingdom','infrakingdom','phylum','phylum_division','subphylum_subdivision','subphylum','infraphylum','parvphylum','gigaclass','megaclass','superclass','class','subclass','infraclass','subterclass','superorder','order','suborder','infraorder','parvorder','superfamily','family','subfamily','supertribe','tribe','subtribe','genus','subgenus','section','subsection','series','species','subspecies','natio','variety','subvariety','forma','subforma',).dropDuplicates(['scientificName', 'date_year'])
+df_merge_clean = aggregated_df_log_trans.join(df_clado_unique, on=["scientificName", "date_year"], how="left")
+```
 
 #### IUCN Dataset
 
 To have accurate IUCN red list categories for the species we incorporated the IUCN red list assessment dataset which has up-to-date red list assessments. Each species the IUCN has assessed is given a classification and its latest assessment date. This information would act as the labels for our data.
-Extracted year from dates - Similar to the previous dataset, we extracted only the year.
-Create the safe column - For the labels, we created a boolean column that would determine whether a species is considered safe or unsafe. If the species was extinct, extinct in the wild, critically endangered, endangered, or vulnerable it would be labeled as not safe (false). If the species was near threatened or least concerned the label would be safe (true). This was later changed to 0 for false and 1 for true so that our models could classify the labels appropriately.
+
+**Extracted year from dates** - Similar to the previous dataset, we extracted only the year using the UDF. Below is the code used.
+```python
+df_assessments = df_iucn.withColumn("assessmentYear",extract_year_udf(f.col("assessmentDate")))
+df_assessments = df_assessments.drop('assessmentDate')
+```
+
+**Create the safe column** - For the labels, we created a boolean column that would determine whether a species is considered safe or unsafe. If the species was extinct, extinct in the wild, critically endangered, endangered, or vulnerable it would be labeled as not safe (false). If the species was near threatened or least concerned the label would be safe (true). This was later changed to 0 for false and 1 for true so that our models could classify the labels appropriately. Below is the code used.
+```python
+df_assessments = df_assessments.filter(f.col('redlistCategory').isNotNull())
+df_assessments = df_assessments.filter(f.col('redlistCategory') != "Data Deficient")
+df_assessments = df_assessments.withColumn("safe?",f.when((df_assessments.redlistCategory == "Endangered") | (df_assessments.redlistCategory == "Extinct")| (df_assessments.redlistCategory == "Vulnerable") | (df_assessments.redlistCategory == "Critically Endangered") |(df_assessments.redlistCategory == "Extinct in the wild"),False).otherwise(True))
+df_assessments = df_assessments.drop("redlistCategory")
+```
+
 #### Merged Dataset
 
 We merged the preprocessed OBIS and IUCN datasets to create a new dataset that would be used for our models. This was followed by some additional cleaning.
-Dropped species with NULL safe - If a species did not have a red list category at this point, they were removed.
-Filtering years before assessment year - Since we are not able to determine the accuracy of a red list category before the year of assessment, those rows were removed.
-Feature expansion - Using the aggregation columns that were created, we created new features that showed the year-on-year changes of aggregates, moving averages, and rolling standard deviations.
+
+**Dropped species with NULL safe** - If a species did not have a red list category at this point, they were removed. Below is the code used.
+```python
+df_merge_safe = df_merge_asses.filter(f.col("safe?").isNotNull())
+```
+
+**Feature expansion** - Using the aggregation columns that were created, we created new features that showed the year-on-year changes of aggregates, moving averages, and rolling standard deviations. Below is the code used.
+```python
+windowSize = 2
+windowSpec = Window.partitionBy("scientificName").orderBy("date_year").rowsBetween(-windowSize, 0)
+lagWindowSpec = Window.partitionBy("scientificName").orderBy("date_year")
+df_merge_years = df_merge_safe.withColumn("moving_avg_sst", f.avg("avg_sst").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("rolling_stddev_sst", f.stddev("avg_sst").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("lag1_avg_sst", f.lag("avg_sst", 1).over(lagWindowSpec))
+df_merge_years = df_merge_years.withColumn("yoy_change_avg_sst", f.col("avg_sst") - f.col("lag1_avg_sst"))
+df_merge_years = df_merge_years.drop("lag1_avg_sst")
+df_merge_years = df_merge_years.withColumn("moving_avg_sss", f.avg("avg_sss").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("rolling_stddev_sss", f.stddev("avg_sss").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("lag1_avg_sss", f.lag("avg_sss", 1).over(lagWindowSpec))
+df_merge_years = df_merge_years.withColumn("yoy_change_avg_sss", f.col("avg_sss") - f.col("lag1_avg_sss"))
+df_merge_years = df_merge_years.drop("lag1_avg_sss")
+df_merge_years = df_merge_years.withColumn("moving_avg_sum_cnt", f.avg("sum_count").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("rolling_stddev_sum_cnt", f.stddev("sum_count").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("lag1_sum_cnt", f.lag("sum_count", 1).over(lagWindowSpec))
+df_merge_years = df_merge_years.withColumn("yoy_change_sum_cnt", f.col("sum_count") - f.col("lag1_sum_cnt"))
+df_merge_years = df_merge_years.drop("lag1_sum_cnt")
+df_merge_years = df_merge_years.withColumn("moving_avg_log_cnt", f.avg("log_sum_count").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("rolling_stddev_log_cnt", f.stddev("log_sum_count").over(windowSpec))
+df_merge_years = df_merge_years.withColumn("lag1_log_cnt", f.lag("log_sum_count", 1).over(lagWindowSpec))
+df_merge_years = df_merge_years.withColumn("yoy_change_log_cnt", f.col("log_sum_count") - f.col("lag1_log_cnt"))
+df_merge_years = df_merge_years.drop("lag1_log_cnt")
+temp = df_merge_years.withColumn("difference_long", f.col("max_decimalLongitude")-f.col("min_decimalLongitude"))
+temp1 = temp.withColumn("difference_lat", f.col("max_decimalLatitude")-f.col("min_decimalLatitude"))
+temp2 = temp1.withColumn("yoy_dif_lat", f.col('difference_lat')-f.lag(f.col('difference_lat')).over(lagWindowSpec))
+temp3 = temp2.withColumn("yoy_dif_long", f.col('difference_long')-f.lag(f.col('difference_long')).over(lagWindowSpec))
+temp4 = temp3.withColumn("yoy_dif_shoredistance", f.col('avg_shoredistance')-f.lag(f.col('avg_shoredistance')).over(lagWindowSpec))
+df_temporal = temp4.withColumn("yoy_dif_bath", f.col('avg_bathymetry')-f.lag(f.col('avg_bathymetry')).over(lagWindowSpec))
+df_temporal = df_temporal.drop(
+    'min_decimalLongitude',
+    'max_decimalLongitude',
+    'min_decimalLatitude',
+    'max_decimalLatitude',
+)
+```
+
+**Filtering years before assessment year** - Since we are not able to determine the accuracy of a red list category before the year of assessment, those rows were removed. Below is the code used.
+```python
+df_temporal = df_temporal.filter(f.col("date_year") >= f.col("assessmentYear")).sort("scientificName", "date_year").drop("assessmentYear").cache()
+```
 
 ### Model 1a - Random Forest
 
 #### Model Creation 
 
-The first model we chose was a random forest model. We set up a vector assembler that took in the features that were specified from the final processed dataset. Then the data was split up to train/validation/test with a 0.6/0.2/0.2 split. Using our training and validation data, we performed a grid search on the hyperparameters max depth and num trees. This code was then re-adapted to form the code for the fitting graph. Using max depth as our basis for the fitting graph, we then checked the fit of our model (see results). 
+The first model we chose was a random forest model. Due to the necessity for the random forest model to ingest numerical data only a number of columns had to be editted or removed. We set up a vector assembler that took in the features that were specified from the final processed dataset. Then the data was split up to train/validation/test with a 0.6/0.2/0.2 split. Using our training and validation data, we performed a grid search on the hyperparameters max depth and num trees. This code was then re-adapted to form the code for the fitting graph. Using max depth as our basis for the fitting graph, we then checked the fit of our model (see results Figure 6).
 
-##### Ground Truth
+Here is a compressed version of the code used to transform the data for random forest.
+```python
+df_temporal_rf = df_temporal.withColumn("marine", f.col("marine").cast("int")).withColumn("brackish", f.col("brackish").cast("int")).withColumn("terrestrial", f.col("terrestrial").cast("int")).withColumn("freshwater", f.col("freshwater").cast("int")).withColumn("safe?", f.col("safe?").cast("int")).fillna(0)
+features = ['avg_shoredistance','avg_bathymetry','avg_sst','avg_sss','sum_count','log_sum_count','marine','brackish','freshwater','terrestrial','moving_avg_sst','rolling_stddev_sst','yoy_change_avg_sst','moving_avg_sss','rolling_stddev_sss','yoy_change_avg_sss','moving_avg_sum_cnt','rolling_stddev_sum_cnt','yoy_change_sum_cnt','moving_avg_log_cnt','rolling_stddev_log_cnt','yoy_change_log_cnt','difference_long','difference_lat','yoy_dif_lat','yoy_dif_long','yoy_dif_shoredistance','yoy_dif_bath']
+assembler = VectorAssembler(inputCols=features, outputCol="features")
+df_ml_vector = assembler.transform(df_temporal_rf).select('safe?', 'features')
+train_data, validation_data, test_data = df_ml_vector.randomSplit([0.6, 0.2, 0.2], seed=42)
+train_data = train_data.cache()
+validation_data = validation_data.cache()
+test_data = test_data.cache()
+```
 
-Once the parameters were chosen, the selected model was trained again on the training data set, and the final validation error was determined (see results). To verify these results we looked at a ground truth example. We first selected a safe observation and an unsafe observation. From that, we created a new data frame that showed whether it came from the training set or the validation  set, the features, the actual values, the predicted values, and a new column that showed whether the predicted values were correct or not.
+Here is a compressed version of the code used to check the error rate at multiple depths.
+```python
+maxDepth_list = [3, 5, 10, 15, 20, 30]
+evaluator = MulticlassClassificationEvaluator(labelCol="safe?", predictionCol="prediction", metricName="accuracy")
+results = []
+for depth in maxDepth_list:
+    rf = RandomForestClassifier(featuresCol="features", labelCol="safe?", maxDepth=depth,seed = 42)
+    model = rf.fit(train_data)
+    train_predictions = model.transform(train_data)
+    train_accuracy = evaluator.evaluate(train_predictions)
+    val_predictions = model.transform(validation_data)
+    val_accuracy = evaluator.evaluate(val_predictions)
+    results.append({'parameters': f"Depth {depth}",'train_error': 1 - train_accuracy,'val_error': 1 - val_accuracy})
+```
+
+Here is a compressed version of the code used to plot the fitting graph.
+```python
+parameters = [r['parameters'] for r in results]
+train_errors = [r['train_error'] for r in results]
+val_errors = [r['val_error'] for r in results]
+plt.figure(figsize=(12, 6))
+plt.plot(parameters, train_errors, label='Training Error', marker='o')
+plt.plot(parameters, val_errors, label='Validation Error', marker='o')
+plt.xlabel('Model Parameters (Max Depth)')
+plt.ylabel('Error Rate')
+plt.title('Fitting Graph of Random Forest Models')
+plt.xticks(rotation=45, ha = 'right')
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+#### Ground Truth
+
+Once the parameters were chosen, the selected model was trained again on the training data set, and the final validation error was determined (see results). To verify these results we looked at a ground truth example. We first selected a safe observation and an unsafe observation. From that, we created a new data frame that showed whether it came from the training set or the validation  set, the features, the actual values, the predicted values, and a new column that showed whether the predicted values were correct or not. 
+
+Here is a compressed version of the code used to obtain the training and validation errors of the select model.
+```python
+rf_10 = RandomForestClassifier(featuresCol="features",labelCol="safe?",maxDepth=10,seed = 42)
+model_10 = rf_10.fit(train_data)
+evaluator = MulticlassClassificationEvaluator(labelCol="safe?", predictionCol="prediction", metricName="accuracy")
+train_predictions = model_10.transform(train_data).withColumn("dataset", f.lit("Train"))
+train_error = 1 - evaluator.evaluate(train_predictions)
+validation_predictions = model_10.transform(validation_data).withColumn("dataset", f.lit("Validation"))
+validation_error = 1 - evaluator.evaluate(validation_predictions)
+```
+
+Here is a compressed version of the code used to look at a ground truth examples.
+```python
+train_pred_safe = train_predictions.select('dataset','features', 'safe?', 'prediction').filter(f.col('safe?') == 1).first()
+train_pred_unsafe = train_predictions.select('dataset','features', 'safe?', 'prediction').filter(f.col('safe?') == 0).first()
+val_pred_safe = validation_predictions.select('dataset','features', 'safe?', 'prediction').filter(f.col('safe?') == 1).first()
+val_pred_unsafe = validation_predictions.select('dataset','features', 'safe?', 'prediction').filter(f.col('safe?') == 0).first()
+ground_df = sc.createDataFrame([train_pred_safe, train_pred_unsafe,val_pred_safe,val_pred_unsafe])
+ground_df.withColumn("correct", f.when(f.col('safe?') == f.col('prediction'), True).otherwise(False)).show()
+```
 
 #### Confusion Matrix 
 
-A confusion matrix was created by selecting the actual labels vs predicted values from the validation set. Because data frames in Pyspark do not have a direct confusion matrix function, we utilized the function from pyspark.mllib instead. This required the data to be transformed into an RDD at which point it could be made into a confusion matrix and presented using seaborn (see results).
+A confusion matrix was created by selecting the actual labels vs predicted values from the validation set. Because data frames in Pyspark do not have a direct confusion matrix function, we utilized the function from pyspark.mllib instead. This required the data to be transformed into an RDD at which point it could be made into a confusion matrix and presented using seaborn (see results Figure 7).
+
+Here is a compressed version of the code used to create the confusion matrix.
+```python
+predictionAndLabels = validation_predictions.select(f.col("prediction"), f.col("safe?"))
+predictionAndLabelsRDD = predictionAndLabels.rdd.map(lambda x: (float(x[0]), float(x[1])))
+metrics = MulticlassMetrics(predictionAndLabelsRDD)
+confusionMatrix = metrics.confusionMatrix().toArray()
+confusion_df = pd.DataFrame(confusionMatrix, index=['Actual 0', 'Actual 1'], columns=['Predicted 0', 'Predicted 1'])
+plt.figure(figsize=(8, 6))
+sns.heatmap(confusion_df, annot=True, cmap="viridis")
+plt.title("Random Forest Confusion Matrix Heatmap")
+plt.ylabel('Actual Label')
+plt.xlabel('Predicted Label')
+plt.show()
+```
 
 #### Feature Importance 
 
-To determine the impact of each feature of the model, we extracted the provided feature importances using the available model method. Ranking and graphing the importance of each feature via a histogram displayed the strength of our selections (see results).
+To determine the impact of each feature of the model, we extracted the provided feature importances using the available model method. Ranking and graphing the importance of each feature via a histogram displayed the strength of our selections (see results Figure 8).
+
+Here is a compressed version of the code used to create the feature histogram.
+```python
+importances = model_10.featureImportances
+importance_list = importances.toArray()
+feature_importance_pairs = list(zip(features, importance_list))
+feature_importance_pairs.sort(key=lambda x: x[1], reverse=True)
+sorted_features, sorted_importance_list = zip(*feature_importance_pairs)
+plt.figure(figsize=(10, 6))
+plt.bar(sorted_features, sorted_importance_list)
+plt.xlabel('Features')
+plt.ylabel('Importance')
+plt.title('Random Forest Feature Importances')
+plt.xticks(rotation=90)
+plt.tight_layout()
+plt.show()
+```
 
 ### Model 1b - Random Forest v2
 
 From the issues that were discussed in the discussion section (see discussion), we decided to do another Random Forest model with adjustments to combat these issues. 
 
-We first reduced the amount of safe values by sampling 0.0888 of the safe values from the dataset. This resulted in a 50/50 split of safe versus non-safe labels. Then we removed the least important features which were marine, freshwater, terrestrial, and brackish. We also removed all features involving log transformations. Then we scaled all the features using the MinMaxScaler function. Then using the same train/validation/test split from before, a parameter grid of max depth and number of trees, alongside a fitting graph built off of max depth, we found the best model that was then used to create the final model (see results).
+We first reduced the amount of safe values by sampling 0.0888 of the safe values from the dataset. This resulted in a 50/50 split of safe versus non-safe labels. Then we removed the least important features which were marine, freshwater, terrestrial, and brackish. We also removed all features involving log transformations. Then we scaled all the features using the MinMaxScaler function. Then using the same train/validation/test split from before, a parameter grid of max depth and number of trees, alongside a fitting graph built off of max depth (see results Figure 10), we found the best model that was then used to create the final model. A ground truth table, a confusion matrix (see results Figure 10) and an importance feature graph (see results Figure 11) were also created with the same methods discussed in model 1a. 
 
-A confusion matrix and an importance feature graph were also created with the same methods discussed in model 1a. 
+Here is a compressed version of the code used to further transform the data for Model 1b. Please refer to Method Section - Model 1a or the [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb) for the code for the fitting graph, ground truth, confusion matrix, and feature importance.
+```python
+df_temporal_notsafe_rf = df_temporal.filter(f.col('safe?')==0)
+df_temporal_safe_rf = df_temporal.filter(f.col('safe?')==1)
+df_temporal_safe_rf = df_temporal_safe_rf.sample(False, fraction=0.0888, seed=42)
+df_temporal_rfv2 = df_temporal_safe_rf.union(df_temporal_notsafe_rf).withColumn("safe?", f.col("safe?").cast("int")).fillna(0)
+features = ['avg_shoredistance','avg_bathymetry','avg_sst','avg_sss','sum_count','moving_avg_sst','rolling_stddev_sst','yoy_change_avg_sst','moving_avg_sss','rolling_stddev_sss','yoy_change_avg_sss','moving_avg_sum_cnt','rolling_stddev_sum_cnt','yoy_change_sum_cnt','difference_long','difference_lat','yoy_dif_lat','yoy_dif_long','yoy_dif_shoredistance','yoy_dif_bath']
+assembler = VectorAssembler(inputCols=features, outputCol="features")
+df_rfv2_vector = assembler.transform(df_temporal_rfv2)
+scaler = MinMaxScaler(inputCol='features', outputCol='scaled_features')
+scaler_model_rf = scaler.fit(df_rfv2_vector)
+df_scaled_rfv2 = scaler_model_rf.transform(df_rfv2_vector)
+train_data_rf2, validation_data_rf2, test_data_rf2 = df_scaled_rfv2.select('safe?', 'scaled_features').randomSplit([0.6, 0.2, 0.2], seed=42)
+train_data_rf2 = train_data_rf2.cache()
+validation_data_rf2 = validation_data_rf2.cache()
+test_data_rf2 = test_data_rf2.cache()
+```
 
 ### Model 2 - Gradient Boosted Trees Classifier
 
-Using the same adjustments to the data made for our 2nd version of the random forest model, we decided to use a gradient-boosted tree classifier. While many of the same methods were employed here as was used in model 1b, the parameter grid was expanded to accommodate the GBT classifier's larger hyperparameter selection. Focusing on max depth, number of iterations, and step size for our parameter grid, and max depth for our fitting graph we narrowed down to a model that was used in our final analysis (see results).
+Using the same adjustments to the data made for our 2nd version of the random forest model, we decided to use a gradient-boosted tree classifier. While many of the same methods were employed here as was used in model 1b, the parameter grid was expanded to accommodate the GBT classifier's larger hyperparameter selection. Focusing on max depth, number of iterations, and step size for our parameter grid, and max depth for our fitting graph (see results Figure 12) we narrowed down to a model that was used in our final analysis. Like before, a ground truth table, a confusion matrix (see results Figure 13) and importance feature graphs (see results Figure 14) were created with the same methods discussed in model 1a.
 
-Like before, a confusion matrix and importance feature graphs were created with the same methods discussed in model 1a.
+Here is a compressed version of the code used to check the error rate at multiple depths of a GBT Classifier. Please refer to Method Section - Model 1b or the [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb) for the code for the data augmentation process, plotting the fitting graph, ground truth, confusion matrix, and feature importance.
+```python
+maxDepth_list = [3, 5, 10, 15, 20, 30]
+evaluator = MulticlassClassificationEvaluator(labelCol='safe?', predictionCol='prediction', metricName='accuracy')
+gbt_results = []
+for depth in maxDepth_list:
+    gbt = GBTClassifier(labelCol='safe?', featuresCol='scaled_features',maxDepth=depth,maxIter=150,stepSize=0.1,seed=42)
+    model_gbt = gbt.fit(train_data_gbt)
+    train_predictions = model_gbt.transform(train_data_gbt)
+    train_accuracy = evaluator.evaluate(train_predictions)
+    val_predictions = model_gbt.transform(validation_data_gbt)
+    val_accuracy = evaluator.evaluate(val_predictions)
+    gbt_results.append({'parameters': f"Depth {depth}",'train_error': 1 - train_accuracy,'val_error': 1 - val_accuracy})
+```
 
 ### Final Model - Random Forest v2
 
@@ -133,7 +439,7 @@ After reviewing the various models, we stuck with our random forest model using 
 
 As before, we retained the 50/50 split between safe and unsafe values to remove errors associated with distribution. This was paired with the removal of the least impactful features according to the feature importance metric of model 1a, which were marine, freshwater, terrestrial, and brackish. Finally, since we applied a min-max scaler to our data, we removed all count features that were put through a log transformation. This left us with the following 20 features: 'avg_shoredistance', 'avg_bathymetry', 'avg_sst', 'avg_sss', 'sum_count', 'moving_avg_sst', 'rolling_stddev_sst', 'yoy_change_avg_sst', 'moving_avg_sss', 'rolling_stddev_sss', 'yoy_change_avg_sss', 'moving_avg_sum_cnt', 'rolling_stddev_sum_cnt', 'yoy_change_sum_cnt', 'difference_long', 'difference_lat', 'yoy_dif_lat', 'yoy_dif_long', 'yoy_dif_shoredistance', 'yoy_dif_bath'.  However, unlike the previous models, we trained the model on the combination of training and validation data and tested our models on the test data set.
 
-We checked the same model metrics as before looking at raw accuracy performance, ground truth accuracy, a confusion matrix, and ranked feature importance (see results). These were obtained in the same method as previous models. However, a fitting graph was not checked in this instance as we were looking at the final model and its selected parameters rather than a range of parameters and their effect on fit.
+We checked the same model metrics as before looking at raw error performance, ground truth error, a confusion matrix (see results Figure 15), and ranked feature importance (see results Figure 16). These were obtained in the same method as previous models. However, a fitting graph was not checked in this instance as we were looking at the final model and its selected parameters rather than a range of parameters and their effect on fit. Please refer to Method Section - Model 1b or the [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb) for the code.
 
 ## Results Section
 
@@ -143,13 +449,28 @@ From our preliminary data exploration, we found that the number of entries has i
 
 These counts do not reflect actual species counts as some entries represent groups of species observed as opposed to singular observations.
 
-![result1](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp1.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp1.png" alt="Number of observations made per year starting at 1900">
+</p>
+<p align="center">
+  <i>Figure 3. Number of observations (10 million) made per year starting at 1900. </i>
+</p>
 
-![result2](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp2.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp2.png" alt="Number of orca observations made per year">
+</p>
+<p align="center">
+  <i>Figure 4. Number of orca observations made per year. </i>
+</p>
 
 As our goal was to use this data set to predict and classify at-risk species, we first summarized the total unique species with red list categories, finding 1979 instances. We found that the majority of the species were classified as NT (Not Threatened) and VU (Vulnerable). This also showed us that the OBIS dataset possessed outdated classifications which would need to be addressed during data pre-processing. This information combined with the red list category order, informed us of our cutoff between a “safe” and “unsafe” species to be NT (Not Threatened). NT (Not Threatened) and LC (Least Concern) acted as our “safe” categories, while everything else acted as our “unsafe” category. LC (Least Concern) is not on the graph below but its information was added later.
 
-![result3](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp3.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp3.png" alt="Species per IUCN red list category classification">
+</p>
+<p align="center">
+  <i>Figure 5. Species per IUCN red list category classification. LR/nt (Lower Risk/not threatened) and LR/cd (Lower Risk/conservation dependent) are outdated classifications used in older data or species who have not been reclassified since the change.</i>
+</p>
 
 Finally, we examined the null counts. With nearly 120 million entries (119568135) and 268 columns, null values were very common. The largest number of null values came from taxonomic entries, with the fewest being environmental data added in by OBIS (see discussion).
 
@@ -166,13 +487,17 @@ After hyperparameter tuning via gridsearch on max depth and number of trees we f
 ![result4](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a1.png)
 
 This initial random forest model which had been trained on the fully cleaned dataset produced the following errors:
+
 Train Error: 0.07325153374233129
+
 Validation Error: 0.08239489489489493
+
 Ground testing and a confusion matrix showed very few accurate predictions of “unsafe” species (safe?=0), but highly accurate ”safe” species (safe?=1)
 
 ![result5](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a2.png)
 
 The top 3 features based on importance were: avg_shoredistance (0.07029372108800737), avg_sst (0.054585481271653045), yoy_dif_bath (0.053229316759500746)
+
 The bottom 3 features based on importance were: brackish (0.005732192189060649), freshwater (0.00421483814423637), marine (0.0031321869659942663)
 
 ![result6](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a3.png)
