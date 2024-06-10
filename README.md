@@ -463,7 +463,7 @@ These counts do not reflect actual species counts as some entries represent grou
   <i>Figure 4. Number of orca observations made per year. </i>
 </p>
 
-As our goal was to use this data set to predict and classify at-risk species, we first summarized the total unique species with red list categories, finding 1979 instances. We found that the majority of the species were classified as NT (Not Threatened) and VU (Vulnerable). This also showed us that the OBIS dataset possessed outdated classifications which would need to be addressed during data pre-processing. This information combined with the red list category order, informed us of our cutoff between a “safe” and “unsafe” species to be NT (Not Threatened). NT (Not Threatened) and LC (Least Concern) acted as our “safe” categories, while everything else acted as our “unsafe” category. LC (Least Concern) is not on the graph below but its information was added later.
+As our goal was to use this data set to predict and classify at-risk species, we first summarized the total unique species with red list categories, finding 1979 instances. We found that the majority of the species were classified as NT (Not Threatened) and VU (Vulnerable). This also showed us that the OBIS dataset possessed outdated classifications which would need to be addressed during data pre-processing. This information combined with the red list category order, informed us of our cutoff between a “safe” and “unsafe” species to be NT (Not Threatened). NT (Not Threatened) and LC (Least Concern) acted as our “safe” categories, while everything else acted as our “unsafe” category. LC (Least Concern) is not on Figure 5 but its information was added later.
 
 <p align="center">
   <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp3.png" alt="Species per IUCN red list category classification">
@@ -472,7 +472,7 @@ As our goal was to use this data set to predict and classify at-risk species, we
   <i>Figure 5. Species per IUCN red list category classification. LR/nt (Lower Risk/not threatened) and LR/cd (Lower Risk/conservation dependent) are outdated classifications used in older data or species who have not been reclassified since the change.</i>
 </p>
 
-Finally, we examined the null counts. With nearly 120 million entries (119568135) and 268 columns, null values were very common. The largest number of null values came from taxonomic entries, with the fewest being environmental data added in by OBIS (see Discussion Section).
+Finally, we examined the null counts. With nearly 120 million entries (119568135) and 268 columns, null values were very common. The largest number of null values came from taxonomic entries, with the fewest being environmental data added in by OBIS.
 
 ### Preprocessing
 
@@ -482,7 +482,7 @@ While the OBIS dataset did provide some red list category classifications (appro
 
 ### Model 1a - Random Forest
 
-After hyperparameter tuning via gridsearch on max depth and number of trees we found that a depth of 10 and the default tree count of 20 provided the best accuracy. Our fitting graph coincided with this showing a good balance between training and validation errors around this range.
+After hyperparameter tuning via gridsearch on maxDepth and numTrees we found that a depth of 10 and the default tree count of 20 provided the best accuracy. Our fitting graph coincided with this showing a good balance between training and validation errors around this range.
 
 <p align="center">
   <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a1.png" alt="Model 1a - Random Forest Fitting Graph">
@@ -529,6 +529,7 @@ After making the adjustments to the data, hyperparameter tuning via grid search 
 </p>
 
 Sticking with a depth of 10, and training the random forest model on a better-distributed data set with scaling applied produced the following errors:
+
 Train Error: 0.08450704225352113
 
 Validation Error: 0.31431767337807603
@@ -553,7 +554,7 @@ The bottom 3 features based on importance were: yoy_change_avg_sss (0.0381122643
   <i>Figure 11. Model 1b - Random Forest v2 Importance Features. Importance features extracted from the model ranked in descending order.</i>
 </p>
 
-### Model 2 - Gradient Boost 
+### Model 2 - Gradient Boosted Trees Classifier
 
 Using the same data as in Model 1b, hyperparameter tuning via grid search found the best parameters to be a depth of 5, a max iteration of 150, and a step size of 0.1. Our fitting graph mirrored this somewhat but showed our model overfitting.
 
@@ -598,13 +599,13 @@ Train Error: 0.10430148458317468
 
 Test Error: 0.32366589327146167
 
-Similar to the original altered random forest model, ground testing and a confusion matrix showed semi-accurate predictions of “unsafe” species (safe?=0) and ”safe” species (safe?=1)
+Similar to the original random forest v2 model, ground testing and a confusion matrix showed semi-accurate predictions of “unsafe” species (safe?=0) and ”safe” species (safe?=1)
 
 <p align="center">
   <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/final1.png" alt="Final Model - Random Forest v2 Confusion Matrix">
 </p>
 <p align="center">
-  <i>Figure 15. Model 1b - Random Forest v2 Confusion Matrix. Comparing actual labels and prediction labels for the test data set.</i>
+  <i>Figure 15. Final Model - Random Forest v2 Confusion Matrix. Comparing actual labels and prediction labels for the test data set.</i>
 </p>
 
 The top 3 features based on importance were: moving_avg_sst (0.07491767966419666), avg_shoredistance (0.07251469520331419), moving_avg_sum_cnt (0.06469008872862284)
@@ -670,23 +671,23 @@ Looking at the validation errors the model appears to be doing extremely well. H
 
 ### Model 1b - Random Forest v2
 
-We decided to do another random forest model with the adjustments to the data (see Discussion Section). With these adjustments, the model better generalized to the data but our accuracy suffered greatly. However, this trade-off was worth it as it could more accurately identify at-risk species as opposed to blanket classifying everything as safe. 
+We decided to do another random forest model with the adjustments to the data. With these adjustments, the model better generalized to the data but our accuracy suffered greatly. However, this trade-off was worth it as it could more accurately identify at-risk species as opposed to blanket classifying everything as safe. 
 
-Additionally, certain features started to become more relevant. Moving average sst (sea surface temperature) being a top feature could indicate that organisms in areas where climate change has a larger impact on sst (such as polar regions and tropical) might be facing the greatest threat. Moving average sum count is self-explanatory as those numbers increasing and decreasing would have a direct correlation on population counts. But the rolling standard deviation sea surface salinity being an impactful feature is hard to reason out. It could be that organisms with narrow salinity tolerances are more impacted by higher variability in their local salinity, similar to organisms being affected by changing sst, and this is reflected in the model. But this would require deeper analysis. Regardless, we wanted to try a different model that could potentially have better accuracy given the same adjustments we made. 
+Additionally, certain features started to become more relevant. Moving average sst (sea surface temperature) being a top feature could indicate that organisms in areas where climate change has a larger impact on sst (such as polar regions and tropical) might be facing the greatest threat. Moving average sum count is self-explanatory as those numbers increasing and decreasing would have a direct correlation on population counts. But the rolling standard deviation sss (sea surface salinity) being an impactful feature is hard to reason out. It could be that organisms with narrow salinity tolerances are more impacted by higher variability in their local salinity, similar to organisms being affected by changing sst, and this is reflected in the model. But this would require deeper analysis. Regardless, we wanted to try a different model that could potentially have better accuracy given the same adjustments we made. 
 
-### Model 2 - Gradient Boosted Trees
+### Model 2 - Gradient Boosted Trees Classifier
 
-We chose gradient-boosted trees as the second model as they could potentially handle outlying errors better than a random forest by iteratively correcting errors from previous weak learners. The random forest model struggled with many outliers, which we hoped gradient-boosted trees would manage more effectively. Gradient-boosted trees also tend to perform better on complex data, and given that our data is mostly environmental factors that have varied interactions over time, we expected gradient-boosted trees to perform better.
+We chose a GBT (gradient-boosted tree) classifier as the second model as they could potentially handle outlying errors better than a random forest by iteratively correcting errors from previous weak learners. The random forest model struggled with many outliers, which we hoped the GBT classifier would manage more effectively. GBT classifiers also tend to perform better on complex data, and given that our data is mostly environmental factors that have varied interactions over time, we expected GBT classifiers to perform better.
 
-The gradient-boosted tree model showed similar accuracy to the model 1b. However, given that the run time for this model is much higher than random forest, it may not be worth the slight difference in accuracy. Additionally, the fitting graph showed our model had overfitted in nearly all levels of depth, which might mean that the model would have difficulty in generalizing to new data. 
+The GBT classifier model showed similar accuracy to the model 1b. However, given that the run time for this model is much higher than random forest, it may not be worth the slight difference in accuracy. Additionally, the fitting graph showed our model had overfitted in nearly all levels of depth, which might mean that the model would have difficulty in generalizing to new data. 
 
-Despite this, some interesting results were gleaned from the feature importance extraction. Consistently, sst and sss (sea surface salinity) were among the top features in determining species red list category classification, very similar to the random forest models. Average shore distance being the most influential feature could be explained by human impact as organisms closer to shore might have more human interactions. Or it could be a bias in the data as those reporting this data are going to use observations they have the easiest access to. Bathymetry might have a similar story in that as a majority of marine species live in shallow waters to benefit from the phytoplankton requiring sunlight, they are also the easiest to access by humans. This, in turn, could make them vulnerable to human activities, or it could make them easier to catalog, making them part of a skewed sampling process.
+Despite this, some interesting results were gleaned from the feature importance extraction. Consistently, sst (sea surface temperature) and sss (sea surface salinity) were among the top features in determining species red list category classification, very similar to the random forest models. Average shore distance being the most influential feature could be explained by human impact as organisms closer to shore might have more human interactions. Or it could be a bias in the data as those reporting this data are going to use observations they have the easiest access to. Bathymetry might have a similar story in that as a majority of marine species live in shallow waters to benefit from the phytoplankton requiring sunlight, they are also the easiest to access by humans. This, in turn, could make them vulnerable to human activities, or it could make them easier to catalog, making them part of a skewed sampling process.
 
 While the GBT classifier did not meet expectations, it did provide interesting insights into marine ecological relationships that would benefit from further analysis.
 
 ### Final Model - Random Forest v2
 
-After considering the models and their similar performances, we decided to use the altered random forest model as our final model. Its fitting graph showed much more promise compared to the other models, it had a similar if not equal performance to the GBT model, as well as being able to be trained faster. These qualities made it the best candidate for our final model. While its test performance was not at the level we were hoping for, further feature expansion may improve performance in future iterations.
+After considering the models and their similar performances, we decided to use our random forest v2 model as our final model. Its fitting graph showed much more promise compared to the other models, it had a similar if not equal performance to the GBT classifier model, as well as being able to be trained faster. These qualities made it the best candidate for our final model. While its test performance was not at the level we were hoping for, further feature expansion may improve performance in future iterations.
 
 As seen in the prior models, sst and sss were consistently the most important features throughout the dataset. What was surprising was how spread counts were in their influence on the final model, with rolling averages being the highest impact. Year-over-year features (denoted yoy in the variable names), were consistently the least influential temporal features, which does make some sense as a species change from one year to the next is not representative of a larger trend. Additionally, location information (denoted lat and long in the variable names), was also a poorer predictor than expected. There was some anticipation that changing organism ranges might have a relationship with red list category classification. But that might have been a stretch to assume when such information might have been sourced from captive animal locations. As environmental factors seemed to play the largest role, using temporally dynamic environmental indicators such as dissolved oxygen, chlorophyll-a, or nitrogen levels (estimated from satellite imagery) could provide further improvements to our models.
 
@@ -696,7 +697,7 @@ Models that focus on how marine biodiversity changes over time can help inform p
 
 However, this predictive model is only a first step. An accuracy of 68% is not reliable enough to generalize to other populations. One limitation we faced was that our IUCN dataset only possessed the current classification of a given species. Expanding that to include older assessments of red list category classification might provide insights into long-standing trends that could improve our model performance. Further data expansion could be done by merging oceanographic chemical data collected by NOAA to provide further indicators of a species' changing status.
 
-Our models also employed a binary classification. Classifying the full range of red list categories would be much more useful to an end user who might want a finer grain understanding of a species standing. Additionally, while we tested our model random forest and GBT classification, using more complex models such as neural networks or stacking various models may utilize hidden relationships that our current models might not be able to rely on. 
+Our models also employed a binary classification. Classifying the full range of red list categories would be much more useful to an end user who might want a finer grain understanding of a species standing. Additionally, using more complex models such as neural networks or stacking various models may utilize hidden relationships that our current models might not be able to rely on. 
 
 Finally, it is important to recognize that conflating global marine species' environmental interactions with local fauna might not be an accurate reflection of the complex interactions happening within a select biome. Using this framework to transform local data on a case-by-case might provide a better understanding of how a species is reacting to changes in the environment over time. Careful consideration must be taken of how we can use machine learning models to help species conservation.
 
