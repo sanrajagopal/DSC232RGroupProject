@@ -73,7 +73,7 @@ plt.xlabel("IUCN Classification")
 plt.ylabel("Number of species")
 ```
 
-To compare trends, we decided to look into a well-known marine species, Orinicus Orcas (Orcas aka Killer Whales), and track the number of observations made per year. We filtered by species name matching Ornicus Orcas, grouped by year, and aggregated the counts, and converted the results to a pandas dataframe like before. The line graph generated showed how observations changed over time (see Results Section - Figure 4). Below is a compressed version of the code used.
+To compare trends, we decided to look into a well-known marine species, Orinicus Orcas (Orcas aka Killer Whales), and track the number of observations made per year. We filtered by species name matching Ornicus Orcas, grouped by year, aggregated the counts, and converted the results to a pandas dataframe like before. The line graph generated showed how observations changed over time (see Results Section - Figure 4). Below is a compressed version of the code used.
 ```python
 df_orca = df.filter(df.scientificName == "Orcinus orca").select("date_year").groupBy("date_year").agg({'date_year':'count'}).sort("date_year").cache()
 df_orca = df_orca.withColumnRenamed('count(date_year)','obs_per_year')
