@@ -279,7 +279,7 @@ df_temporal = df_temporal.filter(f.col("date_year") >= f.col("assessmentYear")).
 
 #### Model Creation 
 
-The first model we chose was a random forest model. Due to the necessity for the random forest model to ingest numerical data only a number of columns had to be editted or removed. We set up a vector assembler that took in the features that were specified from the final processed dataset. Then the data was split up to train/validation/test with a 0.6/0.2/0.2 split. Using our training and validation data, we performed a grid search on the hyperparameters max depth and num trees. This code was then re-adapted to form the code for the fitting graph. Using max depth as our basis for the fitting graph, we then checked the fit of our model (see Results Section - Figure 6).
+The first model we chose was a random forest model ([Pyspark Random Forest Documentation](https://spark.apache.org/docs/3.1.3/api/python/reference/api/pyspark.ml.classification.RandomForestClassifier.html)). Due to the Pyspark random forest model's inability to ingest anything but numerical data, a number of columns had to be editted or removed. We set up a vector assembler that took in the features that were specified from the final processed dataset. Then the data was split up into train/validation/test with a 0.6/0.2/0.2 split. Using our training and validation data, we performed a grid search on the hyperparameters maxDepth and numTrees. This code was then re-adapted to form the code for the fitting graph. Using maxDepth as our basis for the fitting graph, we then checked the fit of our model (see Results Section - Figure 6).
 
 Here is a compressed version of the code used to transform the data for random forest.
 ```python
@@ -352,7 +352,7 @@ ground_df.withColumn("correct", f.when(f.col('safe?') == f.col('prediction'), Tr
 
 #### Confusion Matrix 
 
-A confusion matrix was created by selecting the actual labels vs predicted values from the validation set. Because data frames in Pyspark do not have a direct confusion matrix function, we utilized the function from pyspark.mllib instead. This required the data to be transformed into an RDD at which point it could be made into a confusion matrix and presented using seaborn (see Results Section - Figure 7).
+A confusion matrix was created by selecting the actual labels vs predicted values from the validation set. Because data frames in Pyspark do not have a direct confusion matrix function, we utilized the function from pyspark.mllib instead ([Pyspark Confusion Matrix Documentation](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.mllib.evaluation.MulticlassMetrics.html)). This required the data to be transformed into an RDD at which point it could be made into a confusion matrix and presented using seaborn (see Results Section - Figure 7).
 
 Here is a compressed version of the code used to create the confusion matrix.
 ```python
