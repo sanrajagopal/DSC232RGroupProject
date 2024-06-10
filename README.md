@@ -133,7 +133,7 @@ As stated in the data exploration step, due to the volume of data a series of cl
 df_trim_col = df.select('id','decimalLongitude','decimalLatitude','date_year','scientificName','coordinateUncertaintyInMeters','shoredistance','bathymetry','sst','sss','marine','brackish','freshwater','terrestrial','taxonRank','redlist_category','superdomain','domain','kingdom','subkingdom','infrakingdom','phylum','phylum_division','subphylum_subdivision','subphylum','infraphylum','parvphylum','gigaclass','megaclass','superclass','class','subclass','infraclass','subterclass','superorder','order','suborder','infraorder','parvorder','superfamily','family','subfamily','supertribe','tribe','subtribe','genus','subgenus','section','subsection','series','species','subspecies','natio','variety','subvariety','forma','subforma','individualCount','eventDate')
 ```
 
-**Extracted year from dates** - We wanted to group the entries by the species name as well as the year of the sighting. However, some entries were missing available year information which we extracted from a user-entered date column and inserted into the available year column. A UDF was required to parse the dates which proved to be slow. Below is the code used.
+**Extracted year from dates** - We wanted to group the entries by the species name as well as the year of the sighting. However, some entries were missing available year information which we extracted from a user-entered date column and inserted into the available year column. A UDF was required to parse the dates. Below is the code used.
 ```python
 # UDF
 from dateutil import parser
