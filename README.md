@@ -484,7 +484,12 @@ While the OBIS dataset did provide some red list category classifications (appro
 
 After hyperparameter tuning via gridsearch on max depth and number of trees we found that a depth of 10 and the default tree count of 20 provided the best accuracy. Our fitting graph coincided with this showing a good balance between training and validation errors around this range.
 
-![result4](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a1.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a1.png" alt="Model 1a - Random Forest Fitting Graph">
+</p>
+<p align="center">
+  <i>Figure 6. Model 1a - Random Forest Fitting Graph. Comparing the prediction error rate of the random forest model between the training and validation data sets over increasingly complex models (increasing maxDepth hyperparameter values) to check for model fit.</i>
+</p>
 
 This initial random forest model which had been trained on the fully cleaned dataset produced the following errors:
 
@@ -494,63 +499,124 @@ Validation Error: 0.08239489489489493
 
 Ground testing and a confusion matrix showed very few accurate predictions of “unsafe” species (safe?=0), but highly accurate ”safe” species (safe?=1)
 
-![result5](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a2.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a2.png" alt="Model 1a - Random Forest Confusion Matrix">
+</p>
+<p align="center">
+  <i>Figure 7. Model 1a - Random Forest Confusion Matrix. Comparing actual labels and prediction labels for the validation data set.</i>
+</p>
 
 The top 3 features based on importance were: avg_shoredistance (0.07029372108800737), avg_sst (0.054585481271653045), yoy_dif_bath (0.053229316759500746)
 
 The bottom 3 features based on importance were: brackish (0.005732192189060649), freshwater (0.00421483814423637), marine (0.0031321869659942663)
 
-![result6](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a3.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1a3.png" alt="Model 1a - Random Forest Importance Features">
+</p>
+<p align="center">
+  <i>Figure 8. Model 1a - Random Forest Importance Features. Importance features extracted from the model ranked in descending order.</i>
+</p>
 
 ### Model 1b - Random Forest v2
 
 After making the adjustments to the data, hyperparameter tuning via grid search found a depth of 10 and the default tree count of 20 to work best. Our fitting graph showed something similar, but it suggested a depth of 5 might better generalize to data.
 
-![result7](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1b1.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1b1.png" alt="Model 1b - Random Forest v2 Fitting Graph">
+</p>
+<p align="center">
+  <i>Figure 9. Model 1b - Random Forest v2 Fitting Graph. Comparing the prediction error rate of the random forest model between the training and validation data sets over increasingly complex models (increasing maxDepth hyperparameter values) to check for model fit.</i>
+</p>
 
 Sticking with a depth of 10, and training the random forest model on a better-distributed data set with scaling applied produced the following errors:
 Train Error: 0.08450704225352113
+
 Validation Error: 0.31431767337807603
+
 Ground testing and a confusion matrix showed semi-accurate predictions of “unsafe” species (safe?=0) and ”safe” species (safe?=1)
 
-![result8](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1b2.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1b2.png" alt="Model 1b - Random Forest v2 Confusion Matrix">
+</p>
+<p align="center">
+  <i>Figure 10. Model 1b - Random Forest v2 Confusion Matrix. Comparing actual labels and prediction labels for the validation data set.</i>
+</p>
 
 The top 3 features based on importance were: moving_avg_sum_cnt (0.07162572118271372), moving_avg_sst (0.06833591323101115), rolling_stddev_sss (0.06738219203805107)
+
 The bottom 3 features based on importance were: yoy_change_avg_sss (0.03811226434480753), yoy_change_sum_cnt (0.037122476967009446), yoy_dif_long (0.02880474717987468)
 
-![result9](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1b3.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model1b3.png" alt="Model 1b - Random Forest v2 Importance Features">
+</p>
+<p align="center">
+  <i>Figure 11. Model 1b - Random Forest v2 Importance Features. Importance features extracted from the model ranked in descending order.</i>
+</p>
 
 ### Model 2 - Gradient Boost 
 
 Using the same data as in Model 1b, hyperparameter tuning via grid search found the best parameters to be a depth of 5, a max iteration of 150, and a step size of 0.1. Our fitting graph mirrored this somewhat but showed our model overfitting.
 
-![result10](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model21.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model21.png" alt="Model 2 - Gradient Boost Fitting Graph">
+</p>
+<p align="center">
+  <i>Figure 12. Model 2 - Gradient Boost Fitting Graph. Comparing the prediction error rate of the GBT Classifier model between the training and validation data sets over increasingly complex models (increasing maxDepth hyperparameter values) to check for model fit.</i>
+</p>
 
- Training the GBT classifier model on the same data used in model 1b produced the following errors:
+Training the GBT classifier model on the same data used in model 1b produced the following errors:
+
 Train Error: 0.019033117624666973
+
 Validation Error: 0.31543624161073824
+
 Ground testing and a confusion matrix showed semi-accurate predictions of “unsafe” species (safe?=0) and ”safe” species (safe?=1)
 
-![result11](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model22.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model22.png" alt="Model 2 - Gradient Boost v2 Confusion Matrix">
+</p>
+<p align="center">
+  <i>Figure 13. Model 2 - Gradient Boost Confusion Matrix. Comparing actual labels and prediction labels for the validation data set.</i>
+</p>
 
 The top 3 features based on importance were: avg_shoredistance (0.07222773109597815), rolling_stddev_sss (0.06309474509744703), avg_bathymetry (0.061783930675519315)
+
 The bottom 3 features based on importance were: yoy_change_avg_sss (0.039985498358066654), yoy_dif_lat (0.038735048225218095), yoy_change_sum_cnt (0.02733645994338745)
 
-![result12](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model23.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/model23.png" alt="Model 2 - Gradient Boost Importance Features">
+</p>
+<p align="center">
+  <i>Figure 14. Model 2 - Gradient Boost Importance Features. Importance features extracted from the model ranked in descending order.</i>
+</p>
 
 ### Final Model - Random Forest v2
 
 Based on the results of the validation accuracy and fitting graphs, the final model was selected to be the adjusted random forest model. Trained on the combined training and validation data we achieved the following error results:
+
 Train Error: 0.10430148458317468
+
 Test Error: 0.32366589327146167
+
 Similar to the original altered random forest model, ground testing and a confusion matrix showed semi-accurate predictions of “unsafe” species (safe?=0) and ”safe” species (safe?=1)
 
-![result13](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/final1.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/final1.png" alt="Final Model - Random Forest v2 Confusion Matrix">
+</p>
+<p align="center">
+  <i>Figure 15. Model 1b - Random Forest v2 Confusion Matrix. Comparing actual labels and prediction labels for the test data set.</i>
+</p>
 
 The top 3 features based on importance were: moving_avg_sst (0.07491767966419666), avg_shoredistance (0.07251469520331419), moving_avg_sum_cnt (0.06469008872862284)
+
 The bottom 3 features based on importance were: yoy_change_sum_cnt (0.037076837442903465), yoy_dif_long (0.03255308429305591), yoy_dif_lat (0.03173588684044194)
 
-![result14](https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/final2.png)
+<p align="center">
+  <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/final2.png" alt="Final Model - Random Forest v2 Importance Features">
+</p>
+<p align="center">
+  <i>Figure 16. Final Model - Random Forest v2 Importance Features. Importance features extracted from the model ranked in descending order.</i>
+</p>
 
 ## Discussion Section 
 
