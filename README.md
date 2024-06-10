@@ -49,7 +49,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 ```
 
-We first looked into the number of observations per year for the dataset by grouping by the year column and aggregating the counts. We then filtered the dates after 1899 to get all dates from the 20th to 21st centuries. This was then convereted into a pandas dataframe which was used to create a histogram to display the results (see Results - Figure 3). Below is a compressed version of the code used.
+We first looked into the number of observations per year for the dataset by grouping by the year column and aggregating the counts. We then filtered the dates after 1899 to get all dates from the 20th to 21st centuries. This was then convereted into a pandas dataframe which was used to create a histogram to display the results (see Results Section - Figure 3). Below is a compressed version of the code used.
 ```python
 df_dates = df.groupBy(df.date_year).agg({'date_year':'count'}).sort(df.date_year).cache()
 df_dates = df_dates.withColumnRenamed('count(date_year)','obs_per_year')
@@ -61,7 +61,7 @@ plt.xlabel("Years")
 plt.ylabel("Observations(per 10 million)")
 ```
 
-Then we looked into how many red list categories per species there were in the whole dataset. Filtering for unique species and red list category pairs, followed by grouping by the red list category column alone found us the counts per category. This summarized table was then converted into a pandas dataframe. We then used the dataframe to create a bar graph to display the counts of the red list categories (see Results - Figure 5). Below is a compressed version of the code used.
+Then we looked into how many red list categories per species there were in the whole dataset. Filtering for unique species and red list category pairs, followed by grouping by the red list category column alone found us the counts per category. This summarized table was then converted into a pandas dataframe. We then used the dataframe to create a bar graph to display the counts of the red list categories (see Results Section - Figure 5). Below is a compressed version of the code used.
 ```python
 df_redlist_distinct = df.select("scientificName","redlist_category").filter(df.scientificName != "").filter(df.redlist_category != "").distinct().cache()
 df_redlist_count = df_redlist_distinct.select("redlist_category").groupBy("redlist_category").agg({'redlist_category':'count'})
@@ -73,7 +73,7 @@ plt.xlabel("IUCN Classification")
 plt.ylabel("Number of species")
 ```
 
-To compare trends, we decided to look into a well-known marine species, Orinicus Orcas (Orcas aka Killer Whales), and track the number of observations made per year. We filtered by species name matching Ornicus Orcas, grouped by year, and aggregated the counts, and converted the results to a pandas dataframe like before. The line graph generated showed how observations changed over time (see results Figure 4). Below is a compressed version of the code used.
+To compare trends, we decided to look into a well-known marine species, Orinicus Orcas (Orcas aka Killer Whales), and track the number of observations made per year. We filtered by species name matching Ornicus Orcas, grouped by year, and aggregated the counts, and converted the results to a pandas dataframe like before. The line graph generated showed how observations changed over time (see Results Section - Figure 4). Below is a compressed version of the code used.
 ```python
 df_orca = df.filter(df.scientificName == "Orcinus orca").select("date_year").groupBy("date_year").agg({'date_year':'count'}).sort("date_year").cache()
 df_orca = df_orca.withColumnRenamed('count(date_year)','obs_per_year')
@@ -279,7 +279,7 @@ df_temporal = df_temporal.filter(f.col("date_year") >= f.col("assessmentYear")).
 
 #### Model Creation 
 
-The first model we chose was a random forest model. Due to the necessity for the random forest model to ingest numerical data only a number of columns had to be editted or removed. We set up a vector assembler that took in the features that were specified from the final processed dataset. Then the data was split up to train/validation/test with a 0.6/0.2/0.2 split. Using our training and validation data, we performed a grid search on the hyperparameters max depth and num trees. This code was then re-adapted to form the code for the fitting graph. Using max depth as our basis for the fitting graph, we then checked the fit of our model (see results Figure 6).
+The first model we chose was a random forest model. Due to the necessity for the random forest model to ingest numerical data only a number of columns had to be editted or removed. We set up a vector assembler that took in the features that were specified from the final processed dataset. Then the data was split up to train/validation/test with a 0.6/0.2/0.2 split. Using our training and validation data, we performed a grid search on the hyperparameters max depth and num trees. This code was then re-adapted to form the code for the fitting graph. Using max depth as our basis for the fitting graph, we then checked the fit of our model (see Results Section - Figure 6).
 
 Here is a compressed version of the code used to transform the data for random forest.
 ```python
@@ -327,7 +327,7 @@ plt.show()
 
 #### Ground Truth
 
-Once the parameters were chosen, the selected model was trained again on the training data set, and the final validation error was determined (see results). To verify these results we looked at a ground truth example. We first selected a safe observation and an unsafe observation. From that, we created a new data frame that showed whether it came from the training set or the validation  set, the features, the actual values, the predicted values, and a new column that showed whether the predicted values were correct or not. 
+Once the parameters were chosen, the selected model was trained again on the training data set, and the final validation error was determined (see Results Section). To verify these results we looked at a ground truth example. We first selected a safe observation and an unsafe observation. From that, we created a new data frame that showed whether it came from the training set or the validation  set, the features, the actual values, the predicted values, and a new column that showed whether the predicted values were correct or not. 
 
 Here is a compressed version of the code used to obtain the training and validation errors of the select model.
 ```python
@@ -352,7 +352,7 @@ ground_df.withColumn("correct", f.when(f.col('safe?') == f.col('prediction'), Tr
 
 #### Confusion Matrix 
 
-A confusion matrix was created by selecting the actual labels vs predicted values from the validation set. Because data frames in Pyspark do not have a direct confusion matrix function, we utilized the function from pyspark.mllib instead. This required the data to be transformed into an RDD at which point it could be made into a confusion matrix and presented using seaborn (see results Figure 7).
+A confusion matrix was created by selecting the actual labels vs predicted values from the validation set. Because data frames in Pyspark do not have a direct confusion matrix function, we utilized the function from pyspark.mllib instead. This required the data to be transformed into an RDD at which point it could be made into a confusion matrix and presented using seaborn (see Results Section - Figure 7).
 
 Here is a compressed version of the code used to create the confusion matrix.
 ```python
@@ -371,7 +371,7 @@ plt.show()
 
 #### Feature Importance 
 
-To determine the impact of each feature of the model, we extracted the provided feature importances using the available model method. Ranking and graphing the importance of each feature via a histogram displayed the strength of our selections (see results Figure 8).
+To determine the impact of each feature of the model, we extracted the provided feature importances using the available model method. Ranking and graphing the importance of each feature via a histogram displayed the strength of our selections (see Results Section - Figure 8).
 
 Here is a compressed version of the code used to create the feature histogram.
 ```python
@@ -392,9 +392,9 @@ plt.show()
 
 ### Model 1b - Random Forest v2
 
-From the issues that were discussed in the discussion section (see discussion), we decided to do another Random Forest model with adjustments to combat these issues. 
+From the issues that were discussed in the discussion section (see Discussion Section), we decided to do another Random Forest model with adjustments to combat these issues. 
 
-We first reduced the amount of safe values by sampling 0.0888 of the safe values from the dataset. This resulted in a 50/50 split of safe versus non-safe labels. Then we removed the least important features which were marine, freshwater, terrestrial, and brackish. We also removed all features involving log transformations. Then we scaled all the features using the MinMaxScaler function. Then using the same train/validation/test split from before, a parameter grid of max depth and number of trees, alongside a fitting graph built off of max depth (see results Figure 10), we found the best model that was then used to create the final model. A ground truth table, a confusion matrix (see results Figure 10) and an importance feature graph (see results Figure 11) were also created with the same methods discussed in model 1a. 
+We first reduced the amount of safe values by sampling 0.0888 of the safe values from the dataset. This resulted in a 50/50 split of safe versus non-safe labels. Then we removed the least important features which were marine, freshwater, terrestrial, and brackish. We also removed all features involving log transformations. Then we scaled all the features using the MinMaxScaler function. Then using the same train/validation/test split from before, a parameter grid of max depth and number of trees, alongside a fitting graph built off of max depth (see Results Section - Figure 10), we found the best model that was then used to create the final model. A ground truth table, a confusion matrix (see Results Section - Figure 10) and an importance feature graph (see Results Section - Figure 11) were also created with the same methods discussed in model 1a. 
 
 Here is a compressed version of the code used to further transform the data for Model 1b. Please refer to Method Section - Model 1a or the [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb) for the code for the fitting graph, ground truth, confusion matrix, and feature importance.
 ```python
@@ -416,7 +416,7 @@ test_data_rf2 = test_data_rf2.cache()
 
 ### Model 2 - Gradient Boosted Trees Classifier
 
-Using the same adjustments to the data made for our 2nd version of the random forest model, we decided to use a gradient-boosted tree classifier. While many of the same methods were employed here as was used in model 1b, the parameter grid was expanded to accommodate the GBT classifier's larger hyperparameter selection. Focusing on max depth, number of iterations, and step size for our parameter grid, and max depth for our fitting graph (see results Figure 12) we narrowed down to a model that was used in our final analysis. Like before, a ground truth table, a confusion matrix (see results Figure 13) and importance feature graphs (see results Figure 14) were created with the same methods discussed in model 1a.
+Using the same adjustments to the data made for our 2nd version of the random forest model, we decided to use a gradient-boosted tree classifier. While many of the same methods were employed here as was used in model 1b, the parameter grid was expanded to accommodate the GBT classifier's larger hyperparameter selection. Focusing on max depth, number of iterations, and step size for our parameter grid, and max depth for our fitting graph (see Results Section - Figure 12) we narrowed down to a model that was used in our final analysis. Like before, a ground truth table, a confusion matrix (see Results Section - Figure 13) and importance feature graphs (see Results Section - Figure 14) were created with the same methods discussed in model 1a.
 
 Here is a compressed version of the code used to check the error rate at multiple depths of a GBT Classifier. Please refer to Method Section - Model 1b or the [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb) for the code for the data augmentation process, plotting the fitting graph, ground truth, confusion matrix, and feature importance.
 ```python
@@ -439,7 +439,7 @@ After reviewing the various models, we stuck with our random forest model using 
 
 As before, we retained the 50/50 split between safe and unsafe values to remove errors associated with distribution. This was paired with the removal of the least impactful features according to the feature importance metric of model 1a, which were marine, freshwater, terrestrial, and brackish. Finally, since we applied a min-max scaler to our data, we removed all count features that were put through a log transformation. This left us with the following 20 features: 'avg_shoredistance', 'avg_bathymetry', 'avg_sst', 'avg_sss', 'sum_count', 'moving_avg_sst', 'rolling_stddev_sst', 'yoy_change_avg_sst', 'moving_avg_sss', 'rolling_stddev_sss', 'yoy_change_avg_sss', 'moving_avg_sum_cnt', 'rolling_stddev_sum_cnt', 'yoy_change_sum_cnt', 'difference_long', 'difference_lat', 'yoy_dif_lat', 'yoy_dif_long', 'yoy_dif_shoredistance', 'yoy_dif_bath'.  However, unlike the previous models, we trained the model on the combination of training and validation data and tested our models on the test data set.
 
-We checked the same model metrics as before looking at raw error performance, ground truth error, a confusion matrix (see results Figure 15), and ranked feature importance (see results Figure 16). These were obtained in the same method as previous models. However, a fitting graph was not checked in this instance as we were looking at the final model and its selected parameters rather than a range of parameters and their effect on fit. Please refer to Method Section - Model 1b or the [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb) for the code.
+We checked the same model metrics as before looking at raw error performance, ground truth error, a confusion matrix (see Results Section - Figure 15), and ranked feature importance (see Results Section - Figure 16). These were obtained in the same method as previous models. However, a fitting graph was not checked in this instance as we were looking at the final model and its selected parameters rather than a range of parameters and their effect on fit. Please refer to Method Section - Model 1b or the [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb) for the code.
 
 ## Results Section
 
@@ -472,7 +472,7 @@ As our goal was to use this data set to predict and classify at-risk species, we
   <i>Figure 5. Species per IUCN red list category classification. LR/nt (Lower Risk/not threatened) and LR/cd (Lower Risk/conservation dependent) are outdated classifications used in older data or species who have not been reclassified since the change.</i>
 </p>
 
-Finally, we examined the null counts. With nearly 120 million entries (119568135) and 268 columns, null values were very common. The largest number of null values came from taxonomic entries, with the fewest being environmental data added in by OBIS (see discussion).
+Finally, we examined the null counts. With nearly 120 million entries (119568135) and 268 columns, null values were very common. The largest number of null values came from taxonomic entries, with the fewest being environmental data added in by OBIS (see Discussion Section).
 
 ### Preprocessing
 
@@ -670,7 +670,7 @@ Looking at the validation errors the model appears to be doing extremely well. H
 
 ### Model 1b - Random Forest v2
 
-We decided to do another random forest model with the adjustments to the data (see discussion). With these adjustments, the model better generalized to the data but our accuracy suffered greatly. However, this trade-off was worth it as it could more accurately identify at-risk species as opposed to blanket classifying everything as safe. 
+We decided to do another random forest model with the adjustments to the data (see Discussion Section). With these adjustments, the model better generalized to the data but our accuracy suffered greatly. However, this trade-off was worth it as it could more accurately identify at-risk species as opposed to blanket classifying everything as safe. 
 
 Additionally, certain features started to become more relevant. Moving average sst (sea surface temperature) being a top feature could indicate that organisms in areas where climate change has a larger impact on sst (such as polar regions and tropical) might be facing the greatest threat. Moving average sum count is self-explanatory as those numbers increasing and decreasing would have a direct correlation on population counts. But the rolling standard deviation sea surface salinity being an impactful feature is hard to reason out. It could be that organisms with narrow salinity tolerances are more impacted by higher variability in their local salinity, similar to organisms being affected by changing sst, and this is reflected in the model. But this would require deeper analysis. Regardless, we wanted to try a different model that could potentially have better accuracy given the same adjustments we made. 
 
