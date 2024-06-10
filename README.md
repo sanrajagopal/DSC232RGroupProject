@@ -9,9 +9,9 @@
 
 ## Introduction
 
-The OBIS (Ocean Biodiversity Information System) dataset is a collection of marine animal observations built from collected documentation, volunteer-provided observations, and aggregated data sets whose records go back over 100 years. This open-access data provides information on marine biodiversity to help highlight insights for scientific communities and generate potential sustainability practices. We chose this dataset because we were curious about what different attributes could affect a species' endangerment and whether we can predict if a species is or will be endangered with those features. The IUCN (International Union for Conservation of Nature) is an international organization that is primarily known for its red list categories. Figure 2 shows the different red list categories: extinct, extinct in the wild, critically endangered, endangered, vulnerable, near threatened, and least concerned. These labels determine a species' risk of extinction. Our goal is to dive into the OBIS data set and create a classifier that can accurately predict whether a species may be at risk of becoming threatened according to the IUCN red list categories.
+The OBIS (Ocean Biodiversity Information System) dataset (OBIS 2024) is a collection of marine animal observations built from collected documentation, volunteer-provided observations, and aggregated data sets whose records go back over 100 years. This open-access data provides information on marine biodiversity to help highlight insights for scientific communities and generate potential sustainability practices. We chose this dataset because we were curious about what different attributes could affect a species' endangerment and whether we can predict if a species is or will be endangered with those features. The IUCN (International Union for Conservation of Nature) is an international organization that is primarily known for its red list categories. Figure 2 shows the different red list categories: extinct, extinct in the wild, critically endangered, endangered, vulnerable, near threatened, and least concerned. These labels determine a species' risk of extinction. Our goal is to dive into the OBIS dataset (OBIS 2024) and create a classifier that can accurately predict whether a species may be at risk of becoming threatened according to the IUCN red list categories.
 
-The OBIS data set can be downloaded here: [OBIS Data Set](https://obis.org/data/access/)
+The OBIS dataset (OBIS 2024) can be downloaded here: [OBIS Data Set](https://obis.org/data/access/)
 
 You can follow along in our Jupyter Notebook here: [Jupyter Notebook](https://github.com/sanrajagopal/DSC232RGroupProject/blob/main/obis.ipynb)
 
@@ -206,7 +206,7 @@ df_merge_clean = aggregated_df_log_trans.join(df_clado_unique, on=["scientificNa
 
 #### IUCN Dataset
 
-To have accurate IUCN red list categories for the species we incorporated the IUCN red list assessment dataset which has up-to-date red list assessments. Each species the IUCN has assessed is given a classification and its latest assessment date. This information would act as the labels for our data.
+To have accurate IUCN red list categories for the species we incorporated the IUCN red list assessment dataset (IUCN 2024) which has up-to-date red list assessments. Each species the IUCN has assessed is given a classification and its latest assessment date. This information would act as the labels for our data.
 
 **Extracted year from dates** - Similar to the previous dataset, we extracted only the year using the UDF. Below is the code used.
 ```python
@@ -224,7 +224,7 @@ df_assessments = df_assessments.drop("redlistCategory")
 
 #### Merged Dataset
 
-We merged the preprocessed OBIS and IUCN datasets to create a new dataset that would be used for our models. This was followed by some additional cleaning.
+We merged the preprocessed OBIS (OBIS 2024) and IUCN datasets (IUCN 2024) to create a new dataset that would be used for our models. This was followed by some additional cleaning.
 
 **Dropped species with NULL safe** - If a species did not have a red list category at this point, they were removed. Below is the code used.
 ```python
@@ -463,7 +463,7 @@ These counts do not reflect actual species counts as some entries represent grou
   <i>Figure 4. Number of orca observations made per year. </i>
 </p>
 
-As our goal was to use this data set to predict and classify at-risk species, we first summarized the total unique species with red list categories, finding 1979 instances. We found that the majority of the species were classified as NT (Not Threatened) and VU (Vulnerable). This also showed us that the OBIS dataset possessed outdated classifications which would need to be addressed during data pre-processing. This information combined with the red list category order, informed us of our cutoff between a “safe” and “unsafe” species to be NT (Not Threatened). NT (Not Threatened) and LC (Least Concern) acted as our “safe” categories, while everything else acted as our “unsafe” category. LC (Least Concern) is not on Figure 5 but its information was added later.
+As our goal was to use this data set to predict and classify at-risk species, we first summarized the total unique species with red list categories, finding 1979 instances. We found that the majority of the species were classified as NT (Not Threatened) and VU (Vulnerable). This also showed us that the OBIS dataset (OBIS 2024) possessed outdated classifications which would need to be addressed during data pre-processing. This information combined with the red list category order, informed us of our cutoff between a “safe” and “unsafe” species to be NT (Not Threatened). NT (Not Threatened) and LC (Least Concern) acted as our “safe” categories, while everything else acted as our “unsafe” category. LC (Least Concern) is not on Figure 5 but its information was added later.
 
 <p align="center">
   <img src="https://github.com/sanrajagopal/DSC232RGroupProject/blob/af4b4c7ef8eead00d05631c9e60773087de6ff32/pics/resultexp3.png" alt="Species per IUCN red list category classification">
@@ -478,7 +478,7 @@ Finally, we examined the null counts. With nearly 120 million entries (119568135
 
 Before handling null values, a total of 210 columns were removed. From that point, years retrieved from user input columns helped retain 500,000 entries, but after careful removal of null values, we were left with a little over 100 million entries. After obtaining various aggregates grouped by species and year, we were left with 1.4 million entries.
 
-While the OBIS dataset did provide some red list category classifications (approximately 2000 unique classified species), using the cleaned, full IUCN dataset expanded that to 150,000 possible unique classified species. Further feature expansion of the newly aggregated dataset added 18 columns containing previously inaccessible temporal features (3-year window). With the removal of any entries whose classification cannot be verified due to being older than the classification assessment year left us with 26859 entries and 28 features.
+While the OBIS dataset (OBIS 2024) did provide some red list category classifications (approximately 2000 unique classified species), using the cleaned, full IUCN dataset (IUCN 2024) expanded that to 150,000 possible unique classified species. Further feature expansion of the newly aggregated dataset added 18 columns containing previously inaccessible temporal features (3-year window). With the removal of any entries whose classification cannot be verified due to being older than the classification assessment year left us with 26859 entries and 28 features.
 
 ### Model 1a - Random Forest
 
@@ -625,13 +625,13 @@ The bottom 3 features based on importance were: yoy_change_sum_cnt (0.0370768374
 
 For our data exploration, we wanted to be familiar with the dataset and its many features. Since there were an overwhelming number of columns (over 200) we decided to focus on learning which features would be most important for our prediction models.
 
-By looking at the number of observations per year, we noticed that there were insufficient and inconsistent numbers of observations before 1900. This informed us that we would benefit from removing all data whose year was before that. As our concern was that of entries whose year was on or after the assessment year found in the IUCN dataset, this did not impact our models.
+By looking at the number of observations per year, we noticed that there were insufficient and inconsistent numbers of observations before 1900. This informed us that we would benefit from removing all data whose year was before that. As our concern was that of entries whose year was on or after the assessment year found in the IUCN dataset (IUCN 2024), this did not impact our models.
 
 We also noticed a huge spike of observations in 2016, which was clarified by the OBIS data manager to be due to the ingestion of a particularly large DNA dataset that year. Luckily this matched up with what we saw plotting Orcinus orca (Orca aka Killer Whale) observations over the years, lending credence to this being species agnostic. While an attempt was made to normalize 2016 in pre-processing, those efforts proved to degrade the performance of our model.
 
-Looking at the red list categories per species directly, we noticed that some of the species may have outdated red list classifications or none at all. LR (Lower Risk) was discontinued in 2001 as a classification, as well as all of its derivatives. While still in use for species that haven’t been assessed since 2001, it indicated to us that the OBIS dataset may have out-of-date, or missing information. Additionally, as stated in the results, the OBIS dataset possessed approximately 2000 unique species names and red list category pairs. On the IUCN website, marine species alone account for over 23,000 assessments. This fact helped solidify our decision to introduce the IUCN dataset to help us fill in the gaps of missing or outdated data. 
+Looking at the red list categories per species directly, we noticed that some of the species may have outdated red list classifications or none at all. LR (Lower Risk) was discontinued in 2001 as a classification, as well as all of its derivatives. While still in use for species that haven’t been assessed since 2001, it indicated to us that the OBIS dataset (OBIS 2024) may have out-of-date, or missing information. Additionally, as stated in the results, the OBIS dataset (OBIS 2024) possessed approximately 2000 unique species names and red list category pairs. On the IUCN website, marine species alone account for over 23,000 assessments. This fact helped solidify our decision to introduce the IUCN dataset (IUCN 2024) to help us fill in the gaps of missing or outdated data. 
 
-Finally, null values. As we narrowed down the list of usable features, this did cut down on the null values we needed to be concerned with. However, due to our heavy usage of aggregate values later in preprocessing, those that remained required special attention. The reason for such prevalent null values was 2 fold: species identity and abandoned columns. Due to the fact a species identity often wasn’t known, only a higher taxon was provided by the user. But even when an organism was identified, organisms rarely occupy all hierarchies of taxonomic data, as such those taxonomic categories were left as null. This coupled with the fact that the OBIS dataset has been expanded on and changed over the years, makes many columns redundant.
+Finally, null values. As we narrowed down the list of usable features, this did cut down on the null values we needed to be concerned with. However, due to our heavy usage of aggregate values later in preprocessing, those that remained required special attention. The reason for such prevalent null values was 2 fold: species identity and abandoned columns. Due to the fact a species identity often wasn’t known, only a higher taxon was provided by the user. But even when an organism was identified, organisms rarely occupy all hierarchies of taxonomic data, as such those taxonomic categories were left as null. This coupled with the fact that the OBIS dataset (OBIS 2024) has been expanded on and changed over the years, makes many columns redundant.
 
 ### Preprocessing
 
@@ -653,13 +653,13 @@ Throughout these preprocessing steps, we periodically had to remove null values 
 
 #### IUCN Dataset
 
-To incorporate the IUCN dataset it was necessary to first clean the provided csv file as the IUCN dataset was littered with comments and unformatted text columns. Rigorous manual cleaning was applied, with any further errors being dropped during the joining process.
+To incorporate the IUCN dataset (IUCN 2024) it was necessary to first clean the provided csv file as the IUCN dataset (IUCN 2024) was littered with comments and unformatted text columns. Rigorous manual cleaning was applied, with any further errors being dropped during the joining process.
 
-With the new IUCN dataset handling null and outdated classifications, we wanted to create a binary column for easier classification. This was labeled as safe or unsafe (true or false which was later changed to 0 or 1). A species was labeled as safe if it was near threatened or least concerned and not safe otherwise. However, we came to realize that leaving the classifications as the original 7 may have been better for the model. This fact was unfortunately never explored but might prove interesting as a follow-up to this project.
+With the new IUCN dataset (IUCN 2024) handling null and outdated classifications, we wanted to create a binary column for easier classification. This was labeled as safe or unsafe (true or false which was later changed to 0 or 1). A species was labeled as safe if it was near threatened or least concerned and not safe otherwise. However, we came to realize that leaving the classifications as the original 7 may have been better for the model. This fact was unfortunately never explored but might prove interesting as a follow-up to this project.
 
 #### Merged Dataset 
 
-For our final pre-processing step we generated time series data. We included moving averages, lag 1 data, and year-on-year changes for multiple numerical variables. We kept our moving average to a range of 3 years due to the limited scope of available data after removing anything older than the assessment years in our IUCN dataset. We did not look into lags more than 1 or multiple-year or year changes which could have altered the accuracy of our model. We initially did not standardize any values besides sum counts, which contributed to an inaccurate performing first model. However, we included standardized values for later models.
+For our final pre-processing step we generated time series data. We included moving averages, lag 1 data, and year-on-year changes for multiple numerical variables. We kept our moving average to a range of 3 years due to the limited scope of available data after removing anything older than the assessment years in our IUCN dataset (IUCN 2024). We did not look into lags more than 1 or multiple-year or year changes which could have altered the accuracy of our model. We initially did not standardize any values besides sum counts, which contributed to an inaccurate performing first model. However, we included standardized values for later models.
 
 ### Model 1a - Random Forest
 
@@ -695,11 +695,17 @@ As seen in the prior models, sst and sss were consistently the most important fe
 
 Models that focus on how marine biodiversity changes over time can help inform policymakers and scientists on how to make decisions about topics like fishery availability and conservation effort allocation. Expanding these models to data sets like GBIF (Global Biodiversity Information Facility) could push this idea beyond marine ecosystems, helping understand the ongoing effects of climate change and human impact on our environment.
 
-However, this predictive model is only a first step. An accuracy of 68% is not reliable enough to generalize to other populations. One limitation we faced was that our IUCN dataset only possessed the current classification of a given species. Expanding that to include older assessments of red list category classification might provide insights into long-standing trends that could improve our model performance. Further data expansion could be done by merging oceanographic chemical data collected by NOAA to provide further indicators of a species' changing status.
+However, this predictive model is only a first step. An accuracy of 68% is not reliable enough to generalize to other populations. One limitation we faced was that our IUCN dataset (IUCN 2024) only possessed the current classification of a given species. Expanding that to include older assessments of red list category classification might provide insights into long-standing trends that could improve our model performance. Further data expansion could be done by merging oceanographic chemical data collected by NOAA to provide further indicators of a species' changing status.
 
 Our models also employed a binary classification. Classifying the full range of red list categories would be much more useful to an end user who might want a finer grain understanding of a species standing. Additionally, using more complex models such as neural networks or stacking various models may utilize hidden relationships that our current models might not be able to rely on. 
 
 Finally, it is important to recognize that conflating global marine species' environmental interactions with local fauna might not be an accurate reflection of the complex interactions happening within a select biome. Using this framework to transform local data on a case-by-case might provide a better understanding of how a species is reacting to changes in the environment over time. Careful consideration must be taken of how we can use machine learning models to help species conservation.
+
+## References
+
+OBIS (2024) Ocean Biodiversity Information System. Intergovernmental Oceanographic Commission of UNESCO. https://obis.org.
+
+IUCN. 2023. The IUCN Red List of Threatened Species. Version 2023-1. https://www.iucnredlist.org. Accessed on [14 May 2024].
 
 ## Collaboration
 
